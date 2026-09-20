@@ -1,0 +1,80 @@
+/* =========================================================
+   ARCADE 404 — STYLE ENTRY POINT
+   ---------------------------------------------------------
+   Orden de carga:
+     01. BASE        → tokens, reset, tipografía, animaciones
+     02. LAYOUT      → fondo, CRT, shell, topbar, footer, boot
+     03. COMPONENTS  → botones, paneles, overlays, touch
+     04. SCREENS     → home, hub, pantalla de juego
+     05. CARDS       → tarjetas del hub y mini-previstas
+     06. GAMES       → ajustes específicos de cada juego
+   ========================================================= */
+
+
+/* =========================================================
+   01. BASE
+   ========================================================= */
+
+@import url("./base/tokens.css");
+@import url("./base/reset.css?v=op404-companion-22");
+@import url("./base/typography.css");
+@import url("./base/animations.css");
+@import url("./base/utilities.css");
+
+
+/* =========================================================
+   02. LAYOUT
+   ========================================================= */
+
+@import url("./layout/background.css");
+@import url("./layout/crt.css");
+@import url("./layout/shell.css?v=op404-companion-22");
+@import url("./layout/topbar.css");
+@import url("./layout/footer.css");
+@import url("./layout/boot.css");
+
+
+/* =========================================================
+   03. COMPONENTS
+   ========================================================= */
+
+@import url("./components/button.css");
+@import url("./components/hud.css");
+@import url("./components/overlay.css");
+@import url("./components/taunt.css");
+@import url("./components/touch.css?v=touch-analog-26");
+@import url("./components/transition.css");
+
+
+/* =========================================================
+   04. SCREENS
+   ========================================================= */
+
+@import url("./screens/home.css?v=ui-cover-25");
+@import url("./screens/hub.css");
+@import url("./screens/vip.css?v=op404-companion-22");
+@import url("./screens/game.css?v=touch-analog-26");
+
+
+/* =========================================================
+   05. CARDS
+   ========================================================= */
+
+@import url("./cards/card.css");
+@import url("./cards/previews.css");
+
+
+/* =========================================================
+   06. GAMES
+   ========================================================= */
+
+@import url("./games/snake.css");
+@import url("./games/invaders.css");
+@import url("./games/pong.css");
+@import url("./games/breaker.css");
+@import url("./games/tetris.css?v=stack-modes-23");
+@import url("./games/chess.css");
+@import url("./games/blockblast.css");
+@import url("./games/pac404.css");
+@import url("./games/op404.css?v=op404-companion-22");
+@import url("./games/turno404.css?v=turno404-protocol-32");

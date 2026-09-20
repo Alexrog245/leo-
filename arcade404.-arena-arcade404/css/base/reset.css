@@ -1,0 +1,135 @@
+/* =========================================================
+   RESET MINIMALISTA + NORMALIZACIÓN
+   ========================================================= */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+
+html {
+    min-height: 100%;
+
+    background: var(--color-void);
+
+    -webkit-text-size-adjust: 100%;
+    overscroll-behavior: none;
+}
+
+
+body {
+    margin: 0;
+
+    min-height: 100vh;
+    min-height: 100dvh;
+
+    background: var(--color-void);
+    color: var(--color-text);
+
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.5;
+
+    overflow-x: hidden;
+    overscroll-behavior-x: none;
+
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+
+/* En partida la pantalla está calculada para caber exactamente */
+body.is-gaming {
+    overflow: hidden;
+}
+
+
+h1, h2, h3, h4, h5, h6, p, figure, ul, ol {
+    margin: 0;
+}
+
+ul, ol {
+    padding: 0;
+    list-style: none;
+}
+
+
+img, svg, canvas {
+    display: block;
+    max-width: 100%;
+}
+
+
+button,
+input,
+textarea,
+select {
+    font: inherit;
+    color: inherit;
+}
+
+
+button {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+
+    /* Evita el retraso de doble toque y el destello gris en móviles, sin
+       deshabilitar los gestos del resto de la página. */
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+
+[hidden] {
+    display: none !important;
+}
+
+
+::selection {
+    background: rgba(139, 92, 246, 0.35);
+    color: var(--color-white);
+}
+
+
+/* Foco visible y coherente en todo el sitio */
+:focus-visible {
+    outline: 2px solid var(--color-cyan);
+    outline-offset: 3px;
+}
+
+
+/* Scrollbar discreta (WebKit / Firefox) */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
+}
+
+*::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+    border-radius: var(--radius-pill);
+    background: rgba(255, 255, 255, 0.14);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.24);
+}

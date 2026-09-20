@@ -1,0 +1,614 @@
+/* =========================================================
+   ARCADE 404 — OPERACIÓN 404 (FPS de raycasting)
+   ========================================================= */
+
+.game-screen[data-game="op404"] {
+
+    --accent: var(--color-amber);
+    --accent-rgb: 217 119 6;
+
+    --stage-max: 1020px;
+    --stage-ratio: 1.6;
+    --stage-chrome: 156px;
+
+}
+
+
+/* ---------------------------------------------------------
+   CABINA DEL FPS
+
+   El lienzo ya resuelve el mundo en píxeles; el marco le suma una
+   carcasa de visor con luz ámbar/cian y una trama CRT muy sutil. La
+   capa no intercepta ni ratón ni toque, y se congela para usuarios que
+   prefieren movimiento reducido.
+   --------------------------------------------------------- */
+
+.game-screen[data-game="op404"] .stage-frame {
+    padding: 10px;
+
+    border-color: rgba(251, 191, 36, 0.42);
+
+    background:
+        linear-gradient(135deg, rgba(56, 189, 248, 0.12), transparent 24%),
+        linear-gradient(315deg, rgba(251, 191, 36, 0.13), transparent 32%),
+        #05070e;
+
+    box-shadow:
+        0 0 0 1px rgba(56, 189, 248, 0.13),
+        inset 0 0 0 1px rgba(251, 191, 36, 0.08),
+        inset 0 0 28px rgba(56, 189, 248, 0.06),
+        0 28px 68px rgba(0, 0, 0, 0.58),
+        0 0 46px rgba(251, 191, 36, 0.10);
+}
+
+
+.game-screen[data-game="op404"] .stage-slot {
+    background:
+        radial-gradient(circle at 50% 48%, rgba(56, 189, 248, 0.08), transparent 52%),
+        #03050b;
+}
+
+
+.game-screen[data-game="op404"] .stage-canvas {
+    border: 1px solid rgba(255, 255, 255, 0.055);
+
+    box-shadow:
+        inset 0 0 28px rgba(0, 0, 0, 0.64),
+        0 0 18px rgba(56, 189, 248, 0.08);
+}
+
+
+.game-screen[data-game="op404"] .stage-slot::after {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    z-index: 1;
+
+    pointer-events: none;
+
+    opacity: 0.20;
+
+    background:
+        repeating-linear-gradient(
+            to bottom,
+            rgba(0, 0, 0, 0.22) 0 1px,
+            transparent 1px 4px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(56, 189, 248, 0.08),
+            transparent 18% 82%,
+            rgba(251, 191, 36, 0.08)
+        );
+
+    animation: op404-visor-breath 4.2s ease-in-out infinite;
+}
+
+
+@keyframes op404-visor-breath {
+    0%, 100% {
+        opacity: 0.15;
+    }
+
+    50% {
+        opacity: 0.28;
+    }
+}
+
+
+/* =========================================================
+   TARJETA DEL HUB — miniatura animada del FPS
+
+   Un pasillo en perspectiva por el que avanzas: paredes que
+   se abren hacia el espectador, tres hostiles que aparecen
+   al fondo y crecen hasta la cara, disparos con fogonazo,
+   retroceso del arma, sacudida de cámara y línea de barrido.
+   Todo con transform/opacity para que compose en GPU.
+   ========================================================= */
+
+.preview--op404 {
+
+    position: relative;
+    overflow: hidden;
+
+    width: 190px;
+    height: 110px;
+
+    border-radius: 8px;
+
+    background:
+        linear-gradient(to bottom, #0a0d18 0 44%, #120c07 44% 100%);
+
+    /* La sacudida vive en el contenedor: afecta a toda la escena */
+    animation: op404p-sacudida 2.8s ease-in-out infinite;
+
+}
+
+
+/* --- Pasillo ------------------------------------------- */
+
+.preview--op404 .op404p__cielo {
+
+    position: absolute;
+    inset: 0 0 56% 0;
+
+    background:
+        radial-gradient(
+            ellipse at 50% 100%,
+            rgba(251, 191, 36, 0.22),
+            transparent 62%
+        ),
+        linear-gradient(to bottom, #060912, #10131f);
+
+}
+
+
+/* Suelo con rejilla en fuga hacia el punto de horizonte */
+.preview--op404 .op404p__suelo {
+
+    position: absolute;
+    inset: 44% 0 0 0;
+
+    background:
+        repeating-linear-gradient(
+            to bottom,
+            rgba(217, 119, 6, 0.34) 0 1px,
+            transparent 1px 9px
+        ),
+        linear-gradient(to bottom, rgba(217, 119, 6, 0.06), rgba(217, 119, 6, 0.3));
+
+    /* El desplazamiento simula que caminas hacia delante */
+    animation: op404p-avanza 1.1s linear infinite;
+
+}
+
+
+/* Paredes laterales: trapecios que se abren hacia el frente */
+.preview--op404 .op404p__pared {
+
+    position: absolute;
+    top: 6%;
+    bottom: 0;
+    width: 42%;
+
+    background:
+        repeating-linear-gradient(
+            to bottom,
+            rgba(148, 163, 184, 0.16) 0 6px,
+            rgba(30, 41, 59, 0.5) 6px 13px
+        );
+
+}
+
+.preview--op404 .op404p__pared--izq {
+
+    left: 0;
+
+    clip-path: polygon(0 0, 30% 34%, 30% 66%, 0 100%);
+
+}
+
+.preview--op404 .op404p__pared--der {
+
+    right: 0;
+
+    clip-path: polygon(100% 0, 70% 34%, 70% 66%, 100% 100%);
+
+}
+
+
+/* --- Hostiles ------------------------------------------ */
+
+/* Cada uno nace en el horizonte, crece y se desvanece al
+   llegar. El escalonado de retardos da sensación de oleada. */
+.preview--op404 .op404p__enemigo {
+
+    position: absolute;
+    left: 50%;
+    top: 42%;
+
+    width: 26px;
+    height: 40px;
+
+    margin-left: -13px;
+
+    border-radius: 5px 5px 2px 2px;
+
+    /* Gorra roja, cara, camisa roja y pantalón azul */
+    background:
+        radial-gradient(circle at 50% 22%, #c98a5e 0 5px, transparent 6px),
+        linear-gradient(
+            #dc2626 0 5px,
+            transparent 5px 13px,
+            #dc2626 13px 27px,
+            #1e3a8a 27px 100%
+        );
+
+    box-shadow: 0 0 10px rgba(220, 38, 38, 0.55);
+
+    transform-origin: 50% 100%;
+
+    opacity: 0;
+
+    animation: op404p-carga 2.4s cubic-bezier(0.4, 0, 0.9, 0.6) infinite;
+
+}
+
+.preview--op404 .op404p__enemigo--a {
+    animation-delay: 0s;
+}
+
+.preview--op404 .op404p__enemigo--b {
+
+    margin-left: -46px;
+
+    animation-delay: 0.85s;
+    animation-duration: 2.6s;
+
+}
+
+.preview--op404 .op404p__enemigo--c {
+
+    margin-left: 22px;
+
+    animation-delay: 1.7s;
+    animation-duration: 2.2s;
+
+}
+
+
+/* --- Disparo ------------------------------------------- */
+
+/* La bala sale de la boca del arma hacia el horizonte */
+.preview--op404 .op404p__bala {
+
+    position: absolute;
+    left: 50%;
+    bottom: 20%;
+
+    width: 4px;
+    height: 10px;
+
+    margin-left: -2px;
+
+    border-radius: 2px;
+
+    background: #fde68a;
+    box-shadow: 0 0 10px rgba(251, 191, 36, 0.95);
+
+    opacity: 0;
+
+    animation: op404p-bala 1.4s linear infinite;
+
+}
+
+
+/* Destello del cañón: ilumina el pasillo entero un instante */
+.preview--op404 .op404p__fogonazo {
+
+    position: absolute;
+    left: 50%;
+    bottom: 4%;
+
+    width: 90px;
+    height: 60px;
+
+    margin-left: -45px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(255, 251, 235, 0.95) 0 12%,
+            rgba(251, 191, 36, 0.6) 26%,
+            transparent 68%
+        );
+
+    opacity: 0;
+
+    animation: op404p-fogonazo 1.4s steps(3, end) infinite;
+
+}
+
+
+/* Cañón del arma asomando por abajo, con retroceso */
+.preview--op404 .op404p__arma {
+
+    position: absolute;
+    left: 50%;
+    bottom: -2px;
+
+    width: 22px;
+    height: 26px;
+
+    margin-left: -11px;
+
+    border-radius: 4px 4px 0 0;
+
+    background:
+        linear-gradient(to right, #334155 0 30%, #64748b 30% 70%, #1e293b 70% 100%);
+
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.7);
+
+    animation: op404p-retroceso 1.4s ease-out infinite;
+
+}
+
+
+/* Mira central */
+.preview--op404 .op404p__mira {
+
+    position: absolute;
+    left: 50%;
+    top: 46%;
+
+    width: 13px;
+    height: 13px;
+
+    margin: -7px 0 0 -7px;
+
+    border-radius: 50%;
+
+    box-shadow:
+        inset 0 0 0 1px rgba(251, 191, 36, 0.75),
+        0 0 6px rgba(251, 191, 36, 0.35);
+
+    animation: op404p-mira 1.4s ease-out infinite;
+
+}
+
+
+/* Barrido CRT que recorre la miniatura */
+.preview--op404 .op404p__scan {
+
+    position: absolute;
+    inset: 0;
+
+    background:
+        linear-gradient(
+            to bottom,
+            transparent 0 44%,
+            rgba(251, 191, 36, 0.16) 47%,
+            transparent 50% 100%
+        );
+
+    animation: op404p-scan 3.6s linear infinite;
+
+}
+
+
+/* --- Fotogramas ---------------------------------------- */
+
+@keyframes op404p-avanza {
+
+    from {
+        background-position: 0 0, 0 0;
+    }
+
+    to {
+        background-position: 0 9px, 0 0;
+    }
+
+}
+
+
+@keyframes op404p-carga {
+
+    0% {
+        opacity: 0;
+        transform: translateY(6px) scale(0.16);
+    }
+
+    12% {
+        opacity: 1;
+    }
+
+    /* Bamboleo al correr: se nota más según se acerca */
+    45% {
+        transform: translateY(2px) scale(0.52) rotate(2deg);
+    }
+
+    72% {
+        transform: translateY(0) scale(0.92) rotate(-2deg);
+    }
+
+    88% {
+        opacity: 1;
+        transform: translateY(-2px) scale(1.3) rotate(1deg);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(-4px) scale(1.6);
+    }
+
+}
+
+
+@keyframes op404p-bala {
+
+    0%,
+    62% {
+        opacity: 0;
+        transform: translateY(0) scaleY(1);
+    }
+
+    64% {
+        opacity: 1;
+        transform: translateY(-4px) scaleY(1.2);
+    }
+
+    /* Se aleja hacia el horizonte encogiendo */
+    82% {
+        opacity: 1;
+        transform: translateY(-38px) scaleY(0.55);
+    }
+
+    92%,
+    100% {
+        opacity: 0;
+        transform: translateY(-50px) scaleY(0.3);
+    }
+
+}
+
+
+@keyframes op404p-fogonazo {
+
+    0%,
+    60% {
+        opacity: 0;
+        transform: scale(0.7);
+    }
+
+    63% {
+        opacity: 1;
+        transform: scale(1.05);
+    }
+
+    70% {
+        opacity: 0.45;
+        transform: scale(0.85);
+    }
+
+    76%,
+    100% {
+        opacity: 0;
+        transform: scale(0.7);
+    }
+
+}
+
+
+@keyframes op404p-retroceso {
+
+    0%,
+    60% {
+        transform: translateY(0) rotate(0deg);
+    }
+
+    /* Culatazo seco y vuelta lenta */
+    64% {
+        transform: translateY(7px) rotate(-3deg);
+    }
+
+    78% {
+        transform: translateY(2px) rotate(1deg);
+    }
+
+    100% {
+        transform: translateY(0) rotate(0deg);
+    }
+
+}
+
+
+@keyframes op404p-mira {
+
+    0%,
+    60% {
+        opacity: 0.75;
+        transform: scale(1);
+    }
+
+    64% {
+        opacity: 1;
+        transform: scale(1.45);
+    }
+
+    100% {
+        opacity: 0.75;
+        transform: scale(1);
+    }
+
+}
+
+
+@keyframes op404p-sacudida {
+
+    0%,
+    58%,
+    100% {
+        transform: translate3d(0, 0, 0);
+    }
+
+    /* Coincide con el disparo */
+    62% {
+        transform: translate3d(-1.5px, 1.5px, 0);
+    }
+
+    66% {
+        transform: translate3d(1.5px, -1px, 0);
+    }
+
+    70% {
+        transform: translate3d(-0.5px, 0.5px, 0);
+    }
+
+}
+
+
+@keyframes op404p-scan {
+
+    from {
+        transform: translateY(-100%);
+    }
+
+    to {
+        transform: translateY(100%);
+    }
+
+}
+
+
+/* Al pasar el ratón por la tarjeta, la escena se acelera */
+.game-card:hover .preview--op404 .op404p__enemigo,
+.game-card:focus-visible .preview--op404 .op404p__enemigo {
+    animation-duration: 1.5s;
+}
+
+.game-card:hover .preview--op404 .op404p__bala,
+.game-card:hover .preview--op404 .op404p__fogonazo,
+.game-card:hover .preview--op404 .op404p__arma,
+.game-card:hover .preview--op404 .op404p__mira {
+    animation-duration: 0.85s;
+}
+
+.game-card:hover .preview--op404 .op404p__suelo {
+    animation-duration: 0.6s;
+}
+
+
+/* Accesibilidad: sin movimiento, se congela una escena legible */
+@media (prefers-reduced-motion: reduce) {
+
+    .game-screen[data-game="op404"] .stage-slot::after,
+    .preview--op404,
+    .preview--op404 .op404p__suelo,
+    .preview--op404 .op404p__enemigo,
+    .preview--op404 .op404p__bala,
+    .preview--op404 .op404p__fogonazo,
+    .preview--op404 .op404p__arma,
+    .preview--op404 .op404p__mira,
+    .preview--op404 .op404p__scan {
+        animation: none;
+    }
+
+    .preview--op404 .op404p__enemigo--a {
+        opacity: 1;
+        transform: scale(0.9);
+    }
+
+    .preview--op404 .op404p__enemigo--b {
+        opacity: 1;
+        transform: scale(0.5);
+    }
+
+    .preview--op404 .op404p__enemigo--c {
+        opacity: 0;
+    }
+
+}

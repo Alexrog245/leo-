@@ -1,0 +1,81 @@
+/* =========================================================
+   TIPOGRAFÍA
+   ========================================================= */
+
+h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    font-weight: 900;
+
+    letter-spacing: -0.04em;
+}
+
+
+/* ---------------------------------------------------------
+   Etiquetas de sistema (mono, pequeñas, espaciadas)
+   --------------------------------------------------------- */
+
+.mono-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 500;
+
+    letter-spacing: var(--tracking-wider);
+    text-transform: uppercase;
+
+    color: var(--color-text-muted);
+}
+
+
+/* ---------------------------------------------------------
+   Teclas
+   --------------------------------------------------------- */
+
+kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 20px;
+    padding: 3px 6px;
+
+    border: 1px solid var(--border-medium);
+    border-radius: var(--radius-xs);
+
+    background: rgba(255, 255, 255, 0.05);
+
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 700;
+    line-height: 1;
+
+    letter-spacing: 0.04em;
+
+    color: var(--color-text-dim);
+}
+
+
+/* ---------------------------------------------------------
+   Texto con brillo neón
+   --------------------------------------------------------- */
+
+.glow-text {
+    text-shadow: 0 0 18px rgba(var(--accent-rgb) / 0.55);
+}
+
+
+/* ---------------------------------------------------------
+   Degradado de marca
+   --------------------------------------------------------- */
+
+.gradient-text {
+    color: transparent;
+
+    background: linear-gradient(
+        110deg,
+        var(--color-purple),
+        var(--color-cyan)
+    );
+
+    background-clip: text;
+    -webkit-background-clip: text;
+}

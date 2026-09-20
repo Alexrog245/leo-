@@ -1,0 +1,133 @@
+/* =========================================================
+   DESIGN TOKENS
+   Fuente única de verdad para color, tipografía,
+   espaciado, ritmo y capas de profundidad.
+   ========================================================= */
+
+:root {
+
+    /* ---------------------------------------------------------
+       SUPERFICIES
+       --------------------------------------------------------- */
+
+    --color-void: #06070B;
+    --color-deep: #0A0C13;
+
+    --color-surface: #11141D;
+    --color-surface-2: #171B27;
+    --color-surface-3: #1E2331;
+
+    --color-white: #FFFFFF;
+
+
+    /* ---------------------------------------------------------
+       TEXTO
+       --------------------------------------------------------- */
+
+    --color-text: #F5F7FF;
+    --color-text-dim: #C3C8D8;
+    --color-text-muted: #85899A;
+    --color-text-faint: rgba(133, 137, 154, 0.55);
+
+
+    /* ---------------------------------------------------------
+       NEÓN
+       --------------------------------------------------------- */
+
+    --color-purple: #8B5CF6;
+    --color-cyan: #22D3EE;
+    --color-pink: #F43F5E;
+    --color-lime: #A3E635;
+    --color-amber: #FBBF24;
+    --color-gold: #D4AF37;
+    --color-orange: #FB923C;
+    --color-blue: #3B82F6;
+    --color-green: #22C55E;
+
+
+    /* ---------------------------------------------------------
+       BORDES
+       --------------------------------------------------------- */
+
+    --border-subtle: rgba(255, 255, 255, 0.08);
+    --border-medium: rgba(255, 255, 255, 0.14);
+    --border-strong: rgba(255, 255, 255, 0.24);
+
+
+    /* ---------------------------------------------------------
+       TIPOGRAFÍA
+       --------------------------------------------------------- */
+
+    --font-display: "Orbitron", "Arial Black", Arial, sans-serif;
+    --font-body: "Chakra Petch", "Inter", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+    --font-mono: "JetBrains Mono", "Courier New", monospace;
+
+    --tracking-wide: 0.12em;
+    --tracking-wider: 0.18em;
+    --tracking-widest: 0.28em;
+
+
+    /* ---------------------------------------------------------
+       RADIOS
+       --------------------------------------------------------- */
+
+    --radius-xs: 5px;
+    --radius-sm: 8px;
+    --radius-md: 14px;
+    --radius-lg: 22px;
+    --radius-pill: 999px;
+
+
+    /* ---------------------------------------------------------
+       LAYOUT
+       --------------------------------------------------------- */
+
+    --content-width: 1400px;
+    --gutter: 24px;
+    --topbar-height: 88px;
+    --footer-height: 62px;
+
+
+    /* ---------------------------------------------------------
+       SOMBRAS
+       --------------------------------------------------------- */
+
+    --shadow-sm: 0 6px 18px rgba(0, 0, 0, 0.28);
+    --shadow-md: 0 18px 45px rgba(0, 0, 0, 0.38);
+    --shadow-lg: 0 28px 70px rgba(0, 0, 0, 0.48);
+
+
+    /* ---------------------------------------------------------
+       MOVIMIENTO
+       --------------------------------------------------------- */
+
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+    --duration-fast: 160ms;
+    --duration: 280ms;
+    --duration-slow: 600ms;
+
+
+    /* ---------------------------------------------------------
+       CAPAS
+       --------------------------------------------------------- */
+
+    --z-background: -10;
+    --z-content: 1;
+    --z-topbar: 40;
+    --z-crt: 1000;
+    --z-transition: 1100;
+    --z-boot: 1200;
+
+
+    /* ---------------------------------------------------------
+       ACENTO POR DEFECTO (lo sobreescribe cada juego)
+       --------------------------------------------------------- */
+
+    --accent: var(--color-purple);
+    --accent-rgb: 139 92 246;
+    --accent-soft: rgba(139, 92, 246, 0.16);
+    --accent-line: rgba(139, 92, 246, 0.35);
+
+}

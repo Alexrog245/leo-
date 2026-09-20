@@ -1,0 +1,12 @@
+/* =========================================================
+   GAME 02 — INVADERS
+   ========================================================= */
+
+.game-screen[data-game="invaders"] {
+    --accent: var(--color-pink);
+    --accent-rgb: 244 63 94;
+
+    --stage-max: 1200px;
+    --stage-ratio: 0.857;  /* JS lo ajusta a la pantalla real */
+    --stage-chrome: 150px;
+}

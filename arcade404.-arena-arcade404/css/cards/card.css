@@ -1,0 +1,807 @@
+/* =========================================================
+   TARJETAS DEL HUB
+   Cada ROM se presenta como un pequeño módulo de recreativa:
+   cabecera de cartucho, pantalla de fósforo, placa de datos y
+   un estado de selección inequívoco para ratón y teclado.
+   ========================================================= */
+
+.game-card {
+    --card-color: var(--color-purple);
+    --card-rgb: 139 92 246;
+
+    position: relative;
+
+    min-height: 0;
+
+    display: block;
+
+    padding: 0;
+
+    overflow: hidden;
+
+    border: 1px solid rgb(var(--card-rgb) / 0.27);
+    border-radius: 13px 5px 13px 5px;
+
+    background:
+        linear-gradient(145deg, rgb(18 24 49 / 0.93), rgb(6 10 24 / 0.88) 58%, rgb(13 11 35 / 0.9)),
+        rgb(8 12 28 / 0.82);
+    box-shadow:
+        inset 0 1px 0 rgb(255 255 255 / 0.08),
+        inset 0 -28px 44px rgb(0 0 0 / 0.24),
+        0 12px 27px rgb(0 0 0 / 0.24);
+
+    color: var(--color-text);
+
+    cursor: pointer;
+    text-align: left;
+
+    isolation: isolate;
+    outline: none;
+
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+
+    transition:
+        transform var(--duration) var(--ease-out),
+        border-color var(--duration) var(--ease-out),
+        box-shadow var(--duration) var(--ease-out),
+        background var(--duration) var(--ease-out),
+        filter var(--duration) var(--ease-out);
+}
+
+
+/* ---------------------------------------------------------
+   Carcasa y luminiscencia
+   --------------------------------------------------------- */
+
+.game-card::before {
+    content: "";
+
+    position: absolute;
+    z-index: -1;
+    inset: 4px;
+
+    border: 1px solid rgb(255 255 255 / 0.055);
+    border-radius: 9px 3px 9px 3px;
+
+    background:
+        linear-gradient(90deg, rgb(var(--card-rgb) / 0.12), transparent 22% 78%, rgb(var(--card-rgb) / 0.08)),
+        repeating-linear-gradient(90deg, transparent 0 18px, rgb(255 255 255 / 0.025) 18px 19px);
+
+    opacity: 0.82;
+
+    pointer-events: none;
+    transition:
+        border-color var(--duration) var(--ease-out),
+        opacity var(--duration) var(--ease-out);
+}
+
+
+.game-card::after {
+    content: "";
+
+    position: absolute;
+    z-index: -2;
+    top: -72px;
+    right: -58px;
+
+    width: 190px;
+    height: 190px;
+
+    border-radius: 50%;
+
+    background: rgb(var(--card-rgb));
+
+    filter: blur(66px);
+
+    opacity: 0.08;
+
+    pointer-events: none;
+    transition:
+        opacity var(--duration) var(--ease-out),
+        transform var(--duration-slow) var(--ease-out);
+}
+
+
+/* ---------------------------------------------------------
+   Interacción / selección
+   --------------------------------------------------------- */
+
+.game-card:hover,
+.game-card:focus-visible {
+    z-index: 2;
+
+    transform: translateY(-6px);
+
+    border-color: rgb(var(--card-rgb) / 0.78);
+
+    background:
+        linear-gradient(145deg, rgb(28 34 67 / 0.96), rgb(8 13 32 / 0.92) 58%, rgb(18 13 45 / 0.95)),
+        rgb(8 12 28 / 0.9);
+    box-shadow:
+        inset 0 1px 0 rgb(255 255 255 / 0.13),
+        inset 0 -32px 46px rgb(var(--card-rgb) / 0.09),
+        0 18px 40px rgb(0 0 0 / 0.37),
+        0 0 34px rgb(var(--card-rgb) / 0.2);
+}
+
+
+.game-card:hover::before,
+.game-card:focus-visible::before {
+    border-color: rgb(var(--card-rgb) / 0.36);
+    opacity: 1;
+}
+
+
+.game-card:hover::after,
+.game-card:focus-visible::after {
+    opacity: 0.22;
+    transform: scale(1.25);
+}
+
+
+.game-card:active {
+    transform: translateY(-2px) scale(0.99);
+}
+
+
+/* Teclado y cursor comparten el mismo estado de máquina encendida. */
+.game-card--selected {
+    z-index: 1;
+
+    transform: translateY(-5px) scale(1.012);
+
+    border-color: rgb(var(--card-rgb) / 0.82);
+
+    background:
+        linear-gradient(145deg, rgb(29 34 67 / 0.94), rgb(8 13 31 / 0.9) 58%, rgb(19 13 45 / 0.92)),
+        rgb(8 12 28 / 0.9);
+    box-shadow:
+        inset 0 1px 0 rgb(255 255 255 / 0.12),
+        inset 0 -31px 46px rgb(var(--card-rgb) / 0.1),
+        0 17px 38px rgb(0 0 0 / 0.34),
+        0 0 38px rgb(var(--card-rgb) / 0.23);
+}
+
+
+.game-card--selected::before {
+    border-color: rgb(var(--card-rgb) / 0.42);
+    opacity: 1;
+}
+
+
+.game-card--selected::after {
+    opacity: 0.2;
+}
+
+
+.game-card:focus-visible {
+    outline: 1px solid rgb(var(--card-rgb));
+    outline-offset: 4px;
+}
+
+
+/* Al llegar al hub las tarjetas aparecen por filas, detrás de los listones.
+   `backwards` evita que la animación conserve un transform y bloquee hover. */
+.game-card--entering {
+    animation: card-in 520ms var(--ease-out) var(--entry-delay, 0ms) backwards;
+}
+
+
+/* ---------------------------------------------------------
+   Cabecera de ROM
+   --------------------------------------------------------- */
+
+.game-card__number {
+    position: absolute;
+    z-index: 3;
+    top: 12px;
+    left: 14px;
+
+    color: rgb(226 232 240 / 0.78);
+
+    font-family: var(--font-mono);
+    font-size: 8px;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.16em;
+
+    transition: color var(--duration) var(--ease-out);
+}
+
+
+.game-card--selected .game-card__number,
+.game-card:hover .game-card__number,
+.game-card:focus-visible .game-card__number {
+    color: rgb(var(--card-rgb));
+    text-shadow: 0 0 12px rgb(var(--card-rgb) / 0.7);
+}
+
+
+/* Marca del capítulo que guarda este juego.
+   Apagada mientras no se ha desbloqueado; dorada al conseguirlo. */
+.game-card__chapter {
+    position: absolute;
+    z-index: 3;
+    top: 12px;
+    left: 67px;
+
+    color: var(--color-text-muted);
+
+    font-family: var(--font-mono);
+    font-size: 7px;
+    letter-spacing: 0.12em;
+
+    opacity: 0.62;
+
+    transition: color var(--duration) var(--ease-out),
+                opacity var(--duration) var(--ease-out);
+}
+
+
+.game-card__chapter.is-seen {
+    color: #FBBF24;
+
+    opacity: 1;
+
+    text-shadow: 0 0 10px rgb(251 191 36 / 0.55);
+}
+
+
+.game-card__badge {
+    position: absolute;
+    z-index: 3;
+    top: 9px;
+    right: 12px;
+
+    padding: 4px 7px;
+
+    border: 1px solid rgb(255 255 255 / 0.15);
+    border-radius: 4px 9px 4px 9px;
+
+    background: rgb(2 6 18 / 0.56);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.06);
+
+    color: var(--color-text-dim);
+
+    font-family: var(--font-mono);
+    font-size: 7px;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.12em;
+
+    transition:
+        color var(--duration) var(--ease-out),
+        border-color var(--duration) var(--ease-out),
+        background var(--duration) var(--ease-out);
+}
+
+
+.game-card--selected .game-card__badge,
+.game-card:hover .game-card__badge,
+.game-card:focus-visible .game-card__badge {
+    border-color: rgb(var(--card-rgb) / 0.5);
+    background: rgb(var(--card-rgb) / 0.13);
+    color: #F8FAFC;
+}
+
+
+/* Los dos módulos de campaña conservan una lectura de acceso visible
+   desde el selector; entrar a la ficha es libre, el ticket se descuenta
+   sólo al iniciar desde READY. */
+.game-card__ticket {
+    position: absolute;
+    z-index: 3;
+    top: 34px;
+    right: 12px;
+    padding: 3px 6px;
+    border: 1px solid rgb(251 191 36 / 0.5);
+    border-radius: 3px;
+    background: rgb(35 26 6 / 0.72);
+    color: #fde68a;
+    font-family: var(--font-mono);
+    font-size: 7px;
+    font-weight: 700;
+    letter-spacing: 0.075em;
+    transition: border-color var(--duration-fast), color var(--duration-fast), opacity var(--duration-fast);
+}
+
+.game-card__ticket.is-empty {
+    border-color: rgb(244 63 94 / 0.46);
+    background: rgb(49 10 19 / 0.68);
+    color: #fda4af;
+}
+
+.game-card:hover .game-card__ticket,
+.game-card:focus-visible .game-card__ticket,
+.game-card--selected .game-card__ticket {
+    border-color: var(--color-amber);
+    color: #fef3c7;
+}
+
+
+/* ---------------------------------------------------------
+   Pantalla de la recreativa
+   --------------------------------------------------------- */
+
+.game-card__screen {
+    position: absolute;
+    z-index: 1;
+    top: 37px;
+    right: 12px;
+    bottom: 54px;
+    left: 12px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+
+    border: 1px solid rgb(var(--card-rgb) / 0.22);
+    border-radius: 7px 3px 7px 3px;
+
+    background:
+        radial-gradient(circle at 50% 24%, rgb(var(--card-rgb) / 0.16), transparent 52%),
+        linear-gradient(145deg, rgb(1 6 17 / 0.94), rgb(8 12 29 / 0.75));
+    box-shadow:
+        inset 0 0 0 2px rgb(0 0 0 / 0.28),
+        inset 0 0 27px rgb(var(--card-rgb) / 0.08),
+        0 5px 13px rgb(0 0 0 / 0.25);
+
+    transition:
+        border-color var(--duration) var(--ease-out),
+        box-shadow var(--duration) var(--ease-out),
+        transform var(--duration) var(--ease-out);
+}
+
+
+.game-card__screen::before {
+    content: "";
+
+    position: absolute;
+    z-index: 2;
+    inset: 0;
+
+    background:
+        repeating-linear-gradient(to bottom, transparent 0 3px, rgb(1 4 13 / 0.22) 3px 4px),
+        linear-gradient(115deg, transparent 38%, rgb(255 255 255 / 0.08) 49%, transparent 60%);
+
+    opacity: 0.64;
+
+    pointer-events: none;
+}
+
+
+.game-card__screen::after {
+    content: "";
+
+    position: absolute;
+    z-index: 0;
+    top: -40%;
+    left: -8%;
+
+    width: 36%;
+    height: 190%;
+
+    background: linear-gradient(to right, transparent, rgb(255 255 255 / 0.14), transparent);
+
+    opacity: 0;
+    transform: rotate(22deg) translateX(-170%);
+
+    pointer-events: none;
+}
+
+
+.game-card:hover .game-card__screen,
+.game-card:focus-visible .game-card__screen,
+.game-card--selected .game-card__screen {
+    border-color: rgb(var(--card-rgb) / 0.62);
+    box-shadow:
+        inset 0 0 0 2px rgb(0 0 0 / 0.23),
+        inset 0 0 31px rgb(var(--card-rgb) / 0.18),
+        0 0 20px rgb(var(--card-rgb) / 0.12);
+}
+
+
+.game-card:hover .game-card__screen::after,
+.game-card:focus-visible .game-card__screen::after,
+.game-card--selected .game-card__screen::after {
+    opacity: 0.8;
+    animation: card-screen-sweep 1.5s var(--ease-out) infinite;
+}
+
+
+@keyframes card-screen-sweep {
+    from {
+        transform: rotate(22deg) translateX(-170%);
+    }
+
+    to {
+        transform: rotate(22deg) translateX(510%);
+    }
+}
+
+
+.game-card__visual {
+    position: relative;
+    z-index: 1;
+
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    pointer-events: none;
+
+    transition: transform 420ms var(--ease-out);
+}
+
+
+.game-card--selected .game-card__visual,
+.game-card:hover .game-card__visual,
+.game-card:focus-visible .game-card__visual {
+    transform: scale(1.045);
+}
+
+
+.game-card__visual::after {
+    content: "";
+
+    position: absolute;
+    z-index: -1;
+
+    width: 145px;
+    height: 145px;
+
+    border-radius: 50%;
+
+    background: rgb(var(--card-rgb));
+
+    filter: blur(56px);
+
+    opacity: 0.1;
+
+    transition:
+        opacity var(--duration) var(--ease-out),
+        transform var(--duration-slow) var(--ease-out);
+}
+
+
+.game-card:hover .game-card__visual::after,
+.game-card--selected .game-card__visual::after,
+.game-card:focus-visible .game-card__visual::after {
+    opacity: 0.22;
+    transform: scale(1.2);
+}
+
+
+/* ---------------------------------------------------------
+   Placa de datos / lanzamiento
+   --------------------------------------------------------- */
+
+.game-card__info {
+    position: absolute;
+    z-index: 3;
+    right: 59px;
+    bottom: 12px;
+    left: 14px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    min-width: 0;
+}
+
+
+.game-card__name {
+    overflow: hidden;
+
+    font-family: var(--font-display);
+    font-size: clamp(13px, 1.45vw, 20px);
+    font-weight: 700;
+    line-height: 1.04;
+    letter-spacing: -0.035em;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    transition:
+        color var(--duration) var(--ease-out),
+        text-shadow var(--duration) var(--ease-out);
+}
+
+
+.game-card:hover .game-card__name,
+.game-card:focus-visible .game-card__name,
+.game-card--selected .game-card__name {
+    color: #FFFFFF;
+    text-shadow: 0 0 14px rgb(var(--card-rgb) / 0.43);
+}
+
+
+.game-card__genre,
+.game-card__mode {
+    overflow: hidden;
+
+    color: var(--color-text-muted);
+
+    font-family: var(--font-mono);
+    font-size: 7px;
+    letter-spacing: 0.12em;
+    line-height: 1.1;
+    text-overflow: ellipsis;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+
+.game-card__mode {
+    color: rgb(var(--card-rgb) / 0.78);
+}
+
+
+.game-card__best {
+    margin-top: 6px;
+
+    color: rgb(var(--card-rgb) / 0.85);
+
+    font-family: var(--font-mono);
+    font-size: 8px;
+    letter-spacing: 0.14em;
+
+    font-variant-numeric: tabular-nums;
+}
+
+
+.game-card__arrow {
+    position: absolute;
+    z-index: 3;
+    right: 12px;
+    bottom: 13px;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+
+    color: rgb(var(--card-rgb));
+
+    font-family: var(--font-mono);
+    line-height: 1;
+
+    opacity: 0.58;
+
+    transition:
+        transform 250ms var(--ease-out),
+        opacity 250ms var(--ease-out),
+        filter 250ms var(--ease-out);
+}
+
+
+.game-card__arrow small {
+    font-size: 7px;
+    letter-spacing: 0.14em;
+}
+
+
+.game-card__arrow b {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+
+.game-card:hover .game-card__arrow,
+.game-card--selected .game-card__arrow,
+.game-card:focus-visible .game-card__arrow {
+    opacity: 1;
+    filter: drop-shadow(0 0 7px rgb(var(--card-rgb) / 0.7));
+    transform: translate(3px, -2px);
+}
+
+
+/* ---------------------------------------------------------
+   Estado bloqueado
+   --------------------------------------------------------- */
+
+.game-card--locked {
+    cursor: not-allowed;
+
+    filter: grayscale(0.72);
+
+    opacity: 0.55;
+}
+
+
+.game-card--locked:hover {
+    transform: none;
+}
+
+
+.game-card--locked .game-card__screen {
+    filter: brightness(0.7);
+}
+
+
+/* ---------------------------------------------------------
+   Adaptación: pantallas bajas y móvil
+   --------------------------------------------------------- */
+
+@media (min-width: 641px) and (max-height: 780px) {
+
+    .game-card__number,
+    .game-card__chapter {
+        top: 7px;
+    }
+
+    .game-card__number {
+        left: 10px;
+        font-size: 7px;
+    }
+
+    .game-card__chapter {
+        left: 55px;
+        font-size: 6px;
+    }
+
+    .game-card__badge {
+        top: 5px;
+        right: 8px;
+        padding: 3px 5px;
+        font-size: 6px;
+    }
+
+    .game-card__screen {
+        top: 27px;
+        right: 8px;
+        bottom: 37px;
+        left: 8px;
+    }
+
+    .game-card__info {
+        right: 42px;
+        bottom: 7px;
+        left: 10px;
+    }
+
+    .game-card__name {
+        font-size: clamp(11px, 1.25vw, 15px);
+    }
+
+    .game-card__genre,
+    .game-card__mode {
+        display: none;
+    }
+
+    .game-card__arrow {
+        right: 8px;
+        bottom: 8px;
+    }
+
+    .game-card__arrow small {
+        display: none;
+    }
+
+}
+
+
+@media (max-width: 640px) {
+
+    .game-card {
+        min-height: 174px;
+    }
+
+    .game-card__screen {
+        top: 37px;
+        right: 12px;
+        bottom: 59px;
+        left: 12px;
+    }
+
+    .game-card__visual {
+        transform: scale(0.91);
+    }
+
+    .game-card:hover .game-card__visual,
+    .game-card--selected .game-card__visual,
+    .game-card:focus-visible .game-card__visual {
+        transform: scale(0.96);
+    }
+
+    .game-card__name {
+        font-size: 16px;
+    }
+
+    .game-card__genre,
+    .game-card__mode {
+        font-size: 7px;
+    }
+
+}
+
+
+/* El selector también se usa con el teléfono girado. Estas tarjetas bajas
+   preservan la zona táctil y el arte de cada ROM sin forzar la columna única
+   diseñada para el móvil vertical. */
+@media (max-width: 700px) and (max-height: 540px) and (orientation: landscape) {
+
+    .game-card {
+        min-height: 128px;
+    }
+
+    .game-card__number,
+    .game-card__chapter {
+        top: 7px;
+    }
+
+    .game-card__number {
+        left: 9px;
+        font-size: 6px;
+    }
+
+    .game-card__chapter {
+        left: 50px;
+        font-size: 5px;
+    }
+
+    .game-card__badge {
+        top: 5px;
+        right: 8px;
+        padding: 3px 5px;
+        font-size: 6px;
+    }
+
+    .game-card__ticket {
+        top: 23px;
+        right: 8px;
+        padding: 2px 4px;
+        font-size: 5px;
+    }
+
+    .game-card__screen {
+        top: 26px;
+        right: 8px;
+        bottom: 40px;
+        left: 8px;
+    }
+
+    .game-card__visual,
+    .game-card:hover .game-card__visual,
+    .game-card--selected .game-card__visual,
+    .game-card:focus-visible .game-card__visual {
+        transform: scale(0.86);
+    }
+
+    .game-card__info {
+        right: 37px;
+        bottom: 7px;
+        left: 9px;
+    }
+
+    .game-card__name {
+        font-size: 12px;
+    }
+
+    .game-card__genre,
+    .game-card__mode {
+        display: none;
+    }
+
+    .game-card__arrow {
+        right: 8px;
+        bottom: 7px;
+    }
+
+    .game-card__arrow small {
+        display: none;
+    }
+
+}
+
+
+@media (min-width: 560px) and (max-width: 700px) and (max-height: 540px) and (orientation: landscape) {
+
+    .game-card {
+        min-height: 116px;
+    }
+
+}

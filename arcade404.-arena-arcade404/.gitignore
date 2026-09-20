@@ -1,0 +1,18 @@
+# Dependencias
+node_modules/
+
+# Cachés y builds
+dist/
+build/
+.vite/
+.cache/
+
+# Sistema
+.DS_Store
+Thumbs.db
+*.log
+
+# Editores
+.idea/
+.vscode/*
+!.vscode/extensions.json

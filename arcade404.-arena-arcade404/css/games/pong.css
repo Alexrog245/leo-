@@ -1,0 +1,12 @@
+/* =========================================================
+   GAME 03 — PONG
+   ========================================================= */
+
+.game-screen[data-game="pong"] {
+    --accent: var(--color-cyan);
+    --accent-rgb: 34 211 238;
+
+    --stage-max: 1340px;
+    --stage-ratio: 1.667;  /* JS lo ajusta a la pantalla real */
+    --stage-chrome: 150px;
+}

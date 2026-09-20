@@ -1,0 +1,143 @@
+/* =========================================================
+   ESTRUCTURA GENERAL DE LA APLICACIÓN
+   ========================================================= */
+
+.app {
+    position: relative;
+
+    z-index: var(--z-content);
+
+    width: min(calc(100% - (var(--gutter) * 2)), var(--content-width));
+
+    min-height: 100vh;
+    min-height: 100dvh;
+
+    margin: 0 auto;
+
+    display: flex;
+    flex-direction: column;
+
+    isolation: isolate;
+}
+
+
+.app__main {
+    position: relative;
+
+    flex: 1;
+
+    display: flex;
+    flex-direction: column;
+}
+
+
+/* ---------------------------------------------------------
+   Pantallas
+   --------------------------------------------------------- */
+
+.screen {
+    width: 100%;
+
+    animation: screen-in var(--duration-slow) var(--ease-out) both;
+}
+
+
+/* ---------------------------------------------------------
+   Contenedor de pantallas de juego
+   --------------------------------------------------------- */
+
+/* Durante la partida sólo se ve el juego: el propio juego aporta
+   su barra, su HUD y su salida. */
+body.is-gaming .topbar,
+body.is-gaming .footer,
+body.is-gaming .system-info {
+    display: none;
+}
+
+
+.game-root {
+    position: relative;
+
+    width: 100%;
+    flex: 1;
+
+    display: flex;
+    flex-direction: column;
+
+    min-height: 0;
+
+    /* La animación de entrada desplaza la pantalla 14px: se recorta
+       aquí para que eso no cree scroll en el documento. */
+    overflow: hidden;
+}
+
+.game-root:empty {
+    display: none;
+}
+
+
+/* ---------------------------------------------------------
+   Información de sistema (esquinas)
+   --------------------------------------------------------- */
+
+.system-info {
+    position: fixed;
+    bottom: calc(var(--footer-height) + 26px);
+
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+
+    color: var(--color-text-faint);
+
+    font-family: var(--font-mono);
+    font-size: 8px;
+    letter-spacing: var(--tracking-wide);
+
+    pointer-events: none;
+}
+
+.system-info--left {
+    left: 24px;
+}
+
+.system-info--right {
+    right: 24px;
+
+    text-align: right;
+}
+
+
+/* ---------------------------------------------------------
+   Adaptación a pantallas pequeñas
+   --------------------------------------------------------- */
+
+@media (max-width: 900px) {
+
+    .app {
+        width: 100%;
+        padding-right: max(16px, env(safe-area-inset-right));
+        padding-left: max(16px, env(safe-area-inset-left));
+    }
+
+    /* HOME ya compone su mundo a borde completo y las partidas usan el
+       padding seguro propio de .game-screen: no se duplica el margen. */
+    body.is-home .app,
+    body.is-gaming .app {
+        padding-right: 0;
+        padding-left: 0;
+    }
+
+    body:not(.is-home):not(.is-gaming) .topbar {
+        padding-top: env(safe-area-inset-top);
+    }
+
+    body:not(.is-home):not(.is-gaming) .footer {
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    .system-info {
+        display: none;
+    }
+
+}

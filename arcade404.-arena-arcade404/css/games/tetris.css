@@ -1,0 +1,31 @@
+/* =========================================================
+   GAME 05 — TETRIS / STACK
+   ========================================================= */
+
+.game-screen[data-game="tetris"] {
+    --accent: var(--color-purple);
+    --accent-rgb: 139 92 246;
+
+    --stage-max: 880px;
+    --stage-ratio: 0.791;
+    --stage-chrome: 150px;
+}
+
+/* El selector de partida queda separado del nivel: ARENA conserva Sandtrix
+   y CLÁSICO abre el tablero ligero de filas completas. */
+.game-screen[data-game="tetris"] .hud-switch[data-switch="tetrismode"] {
+    border-color: rgb(34 211 238 / 0.45);
+    background: linear-gradient(100deg, rgb(8 47 73 / 0.38), rgb(49 19 82 / 0.28));
+}
+
+.game-screen[data-game="tetris"] .hud-switch[data-switch="tetrismode"] .hud-switch__option.is-active {
+    background: linear-gradient(115deg, rgb(34 211 238 / 0.22), rgb(167 139 250 / 0.23));
+    color: #e0f2fe;
+}
+
+@media (max-width: 560px) {
+    .game-screen[data-game="tetris"] .hud-switch[data-switch="tetrismode"] .hud-switch__option {
+        min-height: 32px;
+        padding-inline: 8px;
+    }
+}

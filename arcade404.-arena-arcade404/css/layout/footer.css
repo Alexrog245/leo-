@@ -1,0 +1,41 @@
+/* =========================================================
+   PIE DE PÁGINA
+   ========================================================= */
+
+.footer {
+    min-height: var(--footer-height);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 14px;
+
+    border-top: 1px solid var(--border-subtle);
+
+    color: var(--color-text-muted);
+
+    font-family: var(--font-mono);
+    font-size: 8px;
+    letter-spacing: 0.16em;
+
+    text-align: center;
+}
+
+
+.footer__sep {
+    color: var(--color-purple);
+
+    opacity: 0.85;
+}
+
+
+@media (max-width: 700px) {
+
+    .footer {
+        min-height: 54px;
+
+        font-size: 7px;
+    }
+
+}

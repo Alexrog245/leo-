@@ -1,0 +1,645 @@
+/* =========================================================
+   CONTROLES TÁCTILES — DOCK ANALÓGICO COMPARTIDO
+   ---------------------------------------------------------
+   El control vive debajo del escenario, dentro del flujo del shell:
+   nunca se posa sobre el canvas. Cada ROM recibe un joystick radial
+   reutilizable o, si se juega arrastrando, una guía mínima + pausa.
+   ========================================================= */
+
+.touch-controls {
+    --touch-control-size: 96px;
+
+    position: relative;
+
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: clamp(16px, 8vw, 42px);
+
+    width: min(100%, 500px);
+    min-height: calc(var(--touch-control-size) + 4px);
+    padding: 2px 7px;
+
+    color: var(--color-text);
+
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: none;
+}
+
+
+.touch-controls.is-visible {
+    display: flex;
+}
+
+
+/* Una guía muy ligera une los dos grupos sin convertirse en la antigua
+   tarjeta alta y opaca. Los controles, no un bloque vacío, son el dock. */
+.touch-controls--analog::before {
+    content: "";
+
+    position: absolute;
+    z-index: 0;
+    top: 50%;
+    right: 72px;
+    left: 72px;
+
+    height: 1px;
+
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(var(--accent-rgb) / 0.16) 24%,
+        rgba(255, 255, 255, 0.08) 50%,
+        rgba(var(--accent-rgb) / 0.16) 76%,
+        transparent
+    );
+
+    pointer-events: none;
+}
+
+
+/* ---------------------------------------------------------
+   Joystick radial
+   --------------------------------------------------------- */
+
+.touch-stick {
+    position: relative;
+    z-index: 1;
+
+    flex: 0 0 var(--touch-control-size);
+
+    width: var(--touch-control-size);
+    height: var(--touch-control-size);
+
+    border-radius: 50%;
+
+    cursor: crosshair;
+    touch-action: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+
+.touch-stick::before,
+.touch-stick::after {
+    content: "";
+
+    position: absolute;
+    border-radius: inherit;
+
+    pointer-events: none;
+}
+
+
+.touch-stick::before {
+    inset: 2px;
+
+    border: 1px solid rgba(var(--accent-rgb) / 0.44);
+
+    background:
+        radial-gradient(circle at 36% 30%, rgba(255, 255, 255, 0.13), transparent 26%),
+        radial-gradient(circle, rgba(var(--accent-rgb) / 0.16), rgba(5, 9, 19, 0.58) 68%);
+
+    box-shadow:
+        inset 0 0 0 5px rgba(0, 0, 0, 0.16),
+        inset 0 0 22px rgba(var(--accent-rgb) / 0.14),
+        0 9px 20px rgba(0, 0, 0, 0.3),
+        0 0 20px rgba(var(--accent-rgb) / 0.12);
+}
+
+
+.touch-stick::after {
+    inset: 11px;
+
+    border: 1px dashed rgba(255, 255, 255, 0.12);
+
+    opacity: 0.75;
+}
+
+
+.touch-stick__rim,
+.touch-stick__axis,
+.touch-stick__caption,
+.touch-stick__thumb {
+    position: absolute;
+
+    pointer-events: none;
+}
+
+
+.touch-stick__rim {
+    inset: 7px;
+
+    border: 1px solid rgba(var(--accent-rgb) / 0.2);
+    border-radius: 50%;
+
+    box-shadow: inset 0 0 14px rgba(var(--accent-rgb) / 0.08);
+}
+
+
+.touch-stick__axis {
+    z-index: 1;
+
+    background: rgba(var(--accent-rgb) / 0.26);
+    box-shadow: 0 0 6px rgba(var(--accent-rgb) / 0.35);
+}
+
+
+.touch-stick__axis--x {
+    top: 50%;
+    right: 17px;
+    left: 17px;
+
+    height: 1px;
+}
+
+
+.touch-stick__axis--y {
+    top: 17px;
+    bottom: 17px;
+    left: 50%;
+
+    width: 1px;
+}
+
+
+.touch-stick__caption {
+    z-index: 1;
+    right: 0;
+    bottom: 9px;
+    left: 0;
+
+    color: rgba(255, 255, 255, 0.48);
+
+    font-family: var(--font-mono);
+    font-size: 6px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    line-height: 1;
+    text-align: center;
+}
+
+
+.touch-stick__thumb {
+    z-index: 2;
+    top: 50%;
+    left: 50%;
+
+    display: grid;
+    place-items: center;
+
+    width: 42%;
+    aspect-ratio: 1;
+
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 50%;
+
+    background:
+        radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.32), transparent 23%),
+        linear-gradient(145deg, rgba(var(--accent-rgb) / 0.68), rgba(8, 16, 31, 0.94));
+
+    box-shadow:
+        0 5px 12px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.26),
+        0 0 16px rgba(var(--accent-rgb) / 0.35);
+
+    color: #fff;
+
+    transform: translate(-50%, -50%) translate(var(--stick-x, 0px), var(--stick-y, 0px));
+
+    transition:
+        transform 85ms var(--ease-out),
+        box-shadow 110ms var(--ease-out),
+        background 110ms var(--ease-out);
+}
+
+
+.touch-stick__thumb-glyph {
+    color: rgb(255 255 255 / 0.9);
+
+    font-size: clamp(12px, 3.8vw, 17px);
+    line-height: 1;
+
+    text-shadow: 0 0 9px rgba(255, 255, 255, 0.82);
+}
+
+
+.touch-stick.is-active::before {
+    border-color: rgba(var(--accent-rgb) / 0.9);
+
+    box-shadow:
+        inset 0 0 0 5px rgba(0, 0, 0, 0.13),
+        inset 0 0 26px rgba(var(--accent-rgb) / 0.25),
+        0 0 28px rgba(var(--accent-rgb) / 0.28);
+}
+
+
+.touch-stick.is-active .touch-stick__thumb {
+    box-shadow:
+        0 4px 10px rgba(0, 0, 0, 0.42),
+        inset 0 1px 0 rgba(255, 255, 255, 0.34),
+        0 0 24px rgba(var(--accent-rgb) / 0.66);
+}
+
+
+/* Las ROM horizontales (INVADERS) dejan claro que el eje útil es lateral
+   sin reemplazar el mismo componente compartido por un control nuevo. */
+.touch-stick--horizontal .touch-stick__axis--y {
+    opacity: 0.16;
+}
+
+
+.touch-stick--horizontal .touch-stick__caption {
+    letter-spacing: 0.15em;
+}
+
+
+.touch-stick--vertical .touch-stick__axis--x {
+    opacity: 0.16;
+}
+
+
+/* ---------------------------------------------------------
+   Acciones: FIRE / DROP y PAUSE
+   --------------------------------------------------------- */
+
+.touch-actions {
+    position: relative;
+    z-index: 1;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 5px;
+}
+
+
+.touch-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 0;
+
+    border: 1px solid var(--border-medium);
+
+    color: var(--color-text);
+
+    cursor: pointer;
+    font-family: var(--font-mono);
+    line-height: 1;
+    touch-action: none;
+    -webkit-tap-highlight-color: transparent;
+
+    transition:
+        border-color 100ms linear,
+        background 100ms linear,
+        box-shadow 100ms var(--ease-out),
+        transform 100ms var(--ease-out);
+}
+
+
+.touch-btn:focus-visible,
+.touch-stick:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.92);
+    outline-offset: 3px;
+}
+
+
+.touch-btn:active,
+.touch-btn.is-active {
+    border-color: rgba(var(--accent-rgb) / 0.95);
+
+    transform: scale(0.95);
+}
+
+
+.touch-btn--action {
+    flex-direction: column;
+    gap: 4px;
+
+    width: 74px;
+    height: 62px;
+
+    border-color: rgba(var(--accent-rgb) / 0.64);
+    border-radius: 21px 21px 17px 21px;
+
+    background:
+        linear-gradient(145deg, rgba(var(--accent-rgb) / 0.32), rgba(var(--accent-rgb) / 0.09)),
+        rgba(5, 10, 20, 0.74);
+
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.16),
+        0 8px 18px rgba(0, 0, 0, 0.28),
+        0 0 18px rgba(var(--accent-rgb) / 0.15);
+
+    color: rgb(var(--accent-rgb));
+}
+
+
+.touch-btn--action:hover,
+.touch-btn--action:focus-visible {
+    border-color: rgba(255, 255, 255, 0.76);
+
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+        0 8px 20px rgba(0, 0, 0, 0.32),
+        0 0 24px rgba(var(--accent-rgb) / 0.3);
+}
+
+
+.touch-btn--action:active,
+.touch-btn--action.is-active {
+    background:
+        linear-gradient(145deg, rgba(var(--accent-rgb) / 0.62), rgba(var(--accent-rgb) / 0.2)),
+        rgba(5, 10, 20, 0.84);
+}
+
+
+.touch-btn__kicker {
+    color: rgba(255, 255, 255, 0.64);
+
+    font-size: 6px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+}
+
+
+.touch-btn__label {
+    color: rgb(var(--accent-rgb));
+
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+}
+
+
+.touch-controls--drop .touch-btn__label {
+    font-size: 10px;
+    letter-spacing: 0.08em;
+}
+
+
+.touch-btn--utility {
+    gap: 6px;
+
+    width: 74px;
+    min-height: 38px;
+    padding: 0 10px;
+
+    border-color: rgba(255, 255, 255, 0.2);
+    border-radius: 999px;
+
+    background: rgba(255, 255, 255, 0.055);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+
+    color: var(--color-text-muted);
+}
+
+
+.touch-btn--utility:hover,
+.touch-btn--utility:focus-visible {
+    border-color: rgba(var(--accent-rgb) / 0.62);
+
+    background: rgba(var(--accent-rgb) / 0.13);
+    color: var(--color-text);
+}
+
+
+.touch-btn__pause-glyph {
+    color: rgb(var(--accent-rgb));
+
+    font-size: 8px;
+    letter-spacing: -0.12em;
+}
+
+
+.touch-btn__pause-label {
+    font-size: 7px;
+    font-weight: 700;
+    letter-spacing: 0.13em;
+}
+
+
+/* ---------------------------------------------------------
+   Modo puntero — el lienzo conserva el gesto principal
+   --------------------------------------------------------- */
+
+.touch-controls--pointer {
+    width: min(100%, 560px);
+    min-height: 44px;
+    padding: 0 7px;
+
+    gap: 10px;
+}
+
+
+.touch-controls--pointer .touch-actions {
+    flex-direction: row;
+    align-items: center;
+}
+
+
+.touch-hint {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    min-width: 0;
+    min-height: 38px;
+    padding: 6px 2px;
+
+    border-top: 1px solid rgba(var(--accent-rgb) / 0.18);
+    border-bottom: 1px solid rgba(var(--accent-rgb) / 0.1);
+
+    color: var(--color-text-muted);
+
+    font-family: var(--font-mono);
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    line-height: 1.35;
+    text-align: center;
+}
+
+
+.touch-hint::before {
+    content: "↔";
+
+    flex: 0 0 auto;
+
+    color: rgb(var(--accent-rgb));
+
+    font-size: 15px;
+    line-height: 1;
+    text-shadow: 0 0 10px rgba(var(--accent-rgb) / 0.55);
+}
+
+
+/* ---------------------------------------------------------
+   Teléfonos compactos
+   --------------------------------------------------------- */
+
+@media (max-width: 360px) and (pointer: coarse) {
+
+    .touch-controls {
+        --touch-control-size: 84px;
+
+        gap: 13px;
+        padding-inline: 3px;
+    }
+
+    .touch-btn--action,
+    .touch-btn--utility {
+        width: 66px;
+    }
+
+    .touch-btn--action {
+        height: 57px;
+    }
+
+    .touch-btn--utility {
+        min-height: 34px;
+    }
+
+    .touch-btn__label {
+        font-size: 10px;
+    }
+
+    .touch-controls--pointer {
+        gap: 6px;
+    }
+
+    .touch-hint {
+        font-size: 7px;
+        letter-spacing: 0.09em;
+    }
+
+}
+
+
+/* Los teléfonos bajos en vertical conservan zonas cómodas, pero el dock
+   baja a menos de la mitad de la altura que necesitaba el viejo D-pad 3×3. */
+@media (max-height: 620px) and (orientation: portrait) and (pointer: coarse) {
+
+    .touch-controls {
+        --touch-control-size: 78px;
+
+        gap: 13px;
+        padding-block: 0;
+    }
+
+    .touch-btn--action {
+        width: 64px;
+        height: 52px;
+        border-radius: 18px 18px 15px 18px;
+    }
+
+    .touch-btn--utility {
+        width: 64px;
+        min-height: 31px;
+    }
+
+    .touch-btn__kicker {
+        font-size: 5px;
+    }
+
+    .touch-btn__label {
+        font-size: 10px;
+    }
+
+    .touch-hint {
+        min-height: 32px;
+        font-size: 7px;
+    }
+
+}
+
+
+/* En horizontal el dock sigue EN FLUJO: se encoge y se ordena en una sola
+   línea debajo del canvas. Así ningún control tapa marcadores, diálogos ni
+   una jugada en curso, incluso en teléfonos de poca altura. */
+@media (max-height: 540px) and (orientation: landscape) and (pointer: coarse) {
+
+    .touch-controls {
+        --touch-control-size: 72px;
+
+        width: min(100%, 560px);
+        min-height: 72px;
+        padding: 0 8px;
+
+        gap: clamp(14px, 5vw, 32px);
+    }
+
+    .touch-controls--analog::before {
+        right: 58px;
+        left: 58px;
+    }
+
+    .touch-controls--analog .touch-actions {
+        flex-direction: row;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .touch-btn--action {
+        width: 64px;
+        height: 48px;
+
+        border-radius: 17px 17px 14px 17px;
+    }
+
+    .touch-btn--utility {
+        width: 48px;
+        min-height: 48px;
+        padding: 0;
+    }
+
+    .touch-btn__kicker {
+        font-size: 5px;
+    }
+
+    .touch-btn__label {
+        font-size: 9px;
+    }
+
+    .touch-btn__pause-label {
+        display: none;
+    }
+
+    .touch-btn__pause-glyph {
+        font-size: 10px;
+    }
+
+    .touch-controls--pointer {
+        min-height: 40px;
+        padding-inline: 6px;
+    }
+
+    .touch-controls--pointer .touch-btn--utility {
+        width: 43px;
+        min-height: 40px;
+    }
+
+    .touch-hint {
+        min-height: 30px;
+        padding-block: 2px;
+
+        font-size: 7px;
+        letter-spacing: 0.08em;
+    }
+
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+
+    .touch-stick__thumb,
+    .touch-btn {
+        transition: none;
+    }
+
+}

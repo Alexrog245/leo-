@@ -1,0 +1,619 @@
+/* =========================================================
+   BURLAS DE NEÓN — caras, diablito y pixel art del gordo
+   Se dibujan dentro del overlay de fin de partida.
+   ========================================================= */
+
+.taunt {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    gap: 10px;
+
+    margin: 0;
+
+    position: relative;
+
+    width: 100%;
+}
+
+
+.taunt__svg {
+    display: block;
+
+    width: clamp(104px, 16vh, 156px);
+    height: clamp(104px, 16vh, 156px);
+
+    filter:
+        drop-shadow(0 0 14px rgba(255, 92, 168, 0.55))
+        drop-shadow(0 0 34px rgba(255, 92, 168, 0.28));
+
+    animation: devil-bounce 2.4s var(--ease-out) infinite;
+}
+
+
+.taunt__phrase {
+    max-width: 46ch;
+
+    margin: 0;
+
+    color: var(--color-text);
+
+    font-family: var(--font-mono);
+    font-size: clamp(11px, 1.5vh, 14px);
+    font-weight: 700;
+
+    line-height: 1.5;
+
+    letter-spacing: 0.02em;
+
+    text-align: center;
+    text-wrap: balance;
+}
+
+
+/* =========================================================
+   CARAS EMOJI EN NEÓN
+   ========================================================= */
+
+.taunt__face {
+    position: relative;
+
+    display: grid;
+    place-items: center;
+
+    width: clamp(104px, 16vh, 156px);
+    height: clamp(104px, 16vh, 156px);
+
+    border-radius: 50%;
+}
+
+
+/* Anillo de neón que gira detrás del emoji */
+.taunt__ring {
+    position: absolute;
+
+    inset: 0;
+
+    border-radius: 50%;
+
+    background: conic-gradient(
+        from 0deg,
+        transparent 0deg,
+        var(--face-a) 70deg,
+        var(--face-b) 140deg,
+        transparent 220deg,
+        var(--face-a) 300deg,
+        transparent 360deg
+    );
+
+    opacity: 0.5;
+
+    filter: blur(9px);
+
+    animation: devil-pulse 3.2s linear infinite;
+}
+
+
+/* Fondo redondeado: pegamento visual del neón */
+.taunt__face::before {
+    content: "";
+
+    position: absolute;
+
+    inset: -14%;
+
+    border-radius: 50%;
+
+    background: radial-gradient(
+        circle at 50% 50%,
+        var(--face-soft) 0%,
+        transparent 68%
+    );
+
+    filter: blur(2px);
+}
+
+
+.taunt__glyph {
+    position: relative;
+
+    font-size: clamp(60px, 10vh, 100px);
+
+    line-height: 1;
+
+    /* Neón: varias capas de sombra del color de la cara */
+    filter:
+        drop-shadow(0 0 2px var(--face-b))
+        drop-shadow(0 0 10px var(--face-a))
+        drop-shadow(0 0 26px var(--face-glow))
+        saturate(1.25);
+
+    animation: devil-tilt 3.4s var(--ease-out) infinite;
+}
+
+
+/* --- Tonos por cara --- */
+
+.taunt__face--devil {
+    --face-a: #FF5CA8;
+    --face-b: #FFD1E8;
+    --face-soft: rgba(255, 92, 168, 0.26);
+    --face-glow: rgba(255, 92, 168, 0.6);
+}
+
+.taunt__face--clown {
+    --face-a: #FB923C;
+    --face-b: #FFE9B8;
+    --face-soft: rgba(251, 146, 60, 0.26);
+    --face-glow: rgba(251, 146, 60, 0.6);
+}
+
+.taunt__face--meh {
+    --face-a: #22D3EE;
+    --face-b: #CFFAFE;
+    --face-soft: rgba(34, 211, 238, 0.26);
+    --face-glow: rgba(34, 211, 238, 0.6);
+}
+
+.taunt__face--sleepy {
+    --face-a: #A78BFA;
+    --face-b: #EDE9FE;
+    --face-soft: rgba(167, 139, 250, 0.26);
+    --face-glow: rgba(167, 139, 250, 0.6);
+}
+
+.taunt__face--gordo {
+    --face-a: #FBBF24;
+    --face-b: #FEF3C7;
+    --face-soft: rgba(251, 191, 36, 0.26);
+    --face-glow: rgba(251, 191, 36, 0.6);
+}
+
+
+/* --- Personalidad de cada cara --- */
+
+.taunt[data-face="devil"] .taunt__glyph {
+    animation: devil-bounce 2.2s var(--ease-out) infinite;
+}
+
+.taunt[data-face="clown"] .taunt__glyph {
+    animation: devil-tilt 1.5s var(--ease-out) infinite;
+}
+
+.taunt[data-face="meh"] .taunt__glyph {
+    animation: devil-shake 4.2s var(--ease-out) infinite;
+}
+
+.taunt[data-face="sleepy"] .taunt__glyph {
+    animation: devil-cry 3.6s var(--ease-out) infinite;
+}
+
+
+/* =========================================================
+   EL GORDO — pixel art + bocadillo
+   ========================================================= */
+
+.taunt__pixel {
+    position: relative;
+
+    display: block;
+
+    padding-top: 4px;
+}
+
+
+.taunt__pixel-svg {
+    display: block;
+
+    width: clamp(112px, 18vh, 172px);
+    height: auto;
+
+    image-rendering: pixelated;
+
+    filter:
+        drop-shadow(0 0 8px rgba(251, 191, 36, 0.45))
+        drop-shadow(0 0 22px rgba(251, 191, 36, 0.22));
+
+    animation: devil-bounce 1.8s var(--ease-out) infinite;
+}
+
+
+.taunt__bubble {
+    display: flex;
+    flex-direction: column;
+
+    gap: 2px;
+
+    margin-top: 8px;
+    padding: 7px 12px;
+
+    border: 1px solid rgba(251, 191, 36, 0.55);
+    border-radius: var(--radius-sm);
+
+    background: rgba(10, 8, 4, 0.92);
+
+    box-shadow:
+        0 0 18px rgba(251, 191, 36, 0.18),
+        inset 0 0 14px rgba(251, 191, 36, 0.08);
+
+    color: var(--color-amber);
+
+    font-family: var(--font-display);
+    font-size: clamp(9px, 1.35vh, 12px);
+    font-weight: 800;
+
+    letter-spacing: 0.1em;
+
+    text-align: center;
+
+    animation: devil-tilt 2.6s var(--ease-out) infinite;
+}
+
+
+.taunt__bubble b {
+    font-weight: 800;
+}
+
+
+.taunt__bubble b:last-child {
+    color: #FDE68A;
+}
+
+
+/* =========================================================
+   VARIANTES DEL OVERLAY
+   ========================================================= */
+
+.game-overlay--taunt-lose {
+    background:
+        radial-gradient(
+            circle at 50% 34%,
+            rgba(255, 92, 168, 0.14) 0%,
+            transparent 62%
+        ),
+        rgba(6, 7, 11, 0.94);
+
+    border-color: rgba(255, 92, 168, 0.3);
+}
+
+
+.game-overlay--taunt-win {
+    background:
+        radial-gradient(
+            circle at 50% 34%,
+            rgba(251, 191, 36, 0.14) 0%,
+            transparent 62%
+        ),
+        rgba(6, 7, 11, 0.94);
+
+    border-color: rgba(251, 191, 36, 0.3);
+}
+
+
+/* =========================================================
+   ANIMACIONES
+   ========================================================= */
+
+@keyframes devil-bounce {
+
+    0%, 100% {
+        transform: translateY(0) rotate(-2deg);
+    }
+
+    50% {
+        transform: translateY(-9px) rotate(2deg);
+    }
+
+}
+
+
+@keyframes devil-tilt {
+
+    0%, 100% {
+        transform: rotate(-6deg);
+    }
+
+    50% {
+        transform: rotate(6deg);
+    }
+
+}
+
+
+@keyframes devil-shake {
+
+    0%, 84%, 100% {
+        transform: translateX(0);
+    }
+
+    88% {
+        transform: translateX(-5px);
+    }
+
+    92% {
+        transform: translateX(5px);
+    }
+
+    96% {
+        transform: translateX(-3px);
+    }
+
+}
+
+
+@keyframes devil-cry {
+
+    0%, 100% {
+        transform: translateY(2px) rotate(-8deg);
+        opacity: 0.9;
+    }
+
+    50% {
+        transform: translateY(-6px) rotate(-4deg);
+        opacity: 1;
+    }
+
+}
+
+
+@keyframes devil-pulse {
+
+    from {
+        transform: rotate(0deg);
+        opacity: 0.4;
+    }
+
+    50% {
+        opacity: 0.65;
+    }
+
+    to {
+        transform: rotate(360deg);
+        opacity: 0.4;
+    }
+
+}
+
+
+/* =========================================================
+   PANTALLAS PEQUEÑAS / POCA ALTURA
+   ========================================================= */
+
+@media (max-width: 700px), (max-height: 720px) {
+
+    .taunt {
+        gap: 6px;
+    }
+
+    .taunt__svg,
+    .taunt__face {
+        width: clamp(76px, 12vh, 112px);
+        height: clamp(76px, 12vh, 112px);
+    }
+
+    .taunt__glyph {
+        font-size: clamp(40px, 7vh, 62px);
+    }
+
+    .taunt__pixel-svg {
+        width: clamp(84px, 13vh, 128px);
+    }
+
+    .taunt__phrase {
+        font-size: 11px;
+        line-height: 1.45;
+    }
+
+    .taunt__bubble {
+        margin-top: 5px;
+        padding: 5px 9px;
+
+        font-size: 9px;
+    }
+
+}
+
+
+/* =========================================================
+   MOVIMIENTO REDUCIDO
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .taunt__svg,
+    .taunt__glyph,
+    .taunt__ring,
+    .taunt__pixel-svg,
+    .taunt__bubble {
+        animation: none;
+    }
+
+}
+
+
+/* =========================================================
+   AVISO DE NIVEL — excusa flotante sobre el tablero
+   ========================================================= */
+
+.stage-toast {
+    position: absolute;
+
+    top: 12px;
+    left: 50%;
+    z-index: 6;
+
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    width: min(92%, 460px);
+    max-width: 92%;
+
+    padding: 9px 14px 9px 10px;
+
+    border: 1px solid rgba(var(--accent-rgb) / 0.55);
+    border-radius: var(--radius-md);
+
+    background: linear-gradient(
+        100deg,
+        rgba(8, 6, 14, 0.96) 0%,
+        rgba(16, 10, 24, 0.94) 100%
+    );
+
+    box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.03),
+        0 18px 40px rgba(0, 0, 0, 0.55),
+        0 0 34px rgba(var(--accent-rgb) / 0.16);
+
+    backdrop-filter: blur(6px);
+
+    pointer-events: none;
+
+    opacity: 0;
+    transform: translate(-50%, -16px) scale(0.96);
+
+    transition:
+        opacity 260ms var(--ease-out),
+        transform 320ms var(--ease-out);
+}
+
+
+.stage-toast.is-visible {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+}
+
+
+.stage-toast__face {
+    flex-shrink: 0;
+
+    display: grid;
+    place-items: center;
+
+    width: 46px;
+    height: 46px;
+}
+
+
+/* Reescala las caras del overlay para el aviso */
+.stage-toast__face .taunt__svg,
+.stage-toast__face .taunt__face {
+    width: 44px;
+    height: 44px;
+}
+
+.stage-toast__face .taunt__glyph {
+    font-size: 26px;
+}
+
+.stage-toast__face .taunt__pixel-svg {
+    width: 42px;
+    height: auto;
+}
+
+.stage-toast__face .taunt__bubble {
+    display: none;
+}
+
+
+.stage-toast__body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    min-width: 0;
+}
+
+
+.stage-toast__eyebrow {
+    color: rgb(var(--accent-rgb));
+
+    font-family: var(--font-mono);
+    font-size: 8px;
+    font-weight: 700;
+
+    letter-spacing: 0.2em;
+}
+
+
+.stage-toast__title {
+    color: var(--color-text);
+
+    font-family: var(--font-display);
+    font-size: 12px;
+    font-weight: 800;
+
+    letter-spacing: 0.1em;
+}
+
+
+.stage-toast__text {
+    color: var(--color-text-muted);
+
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+
+    line-height: 1.45;
+}
+
+
+@media (max-width: 700px), (max-height: 720px) {
+
+    .stage-toast {
+        top: 8px;
+        gap: 9px;
+        padding: 7px 10px 7px 8px;
+    }
+
+    .stage-toast__face,
+    .stage-toast__face .taunt__svg,
+    .stage-toast__face .taunt__face {
+        width: 34px;
+        height: 34px;
+    }
+
+    .stage-toast__face .taunt__glyph {
+        font-size: 20px;
+    }
+
+    .stage-toast__face .taunt__pixel-svg {
+        width: 32px;
+    }
+
+    .stage-toast__title {
+        font-size: 10px;
+    }
+
+    .stage-toast__text {
+        font-size: 9px;
+    }
+
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+
+    .stage-toast {
+        transition: none;
+    }
+
+}
+
+/* Mensaje breve del compañero activo al cruzar la entrada de una ROM. */
+.stage-toast--companion {
+    max-width: min(440px, calc(100% - 32px));
+    border-color: color-mix(in srgb, var(--companion-color) 62%, transparent);
+    background: linear-gradient(100deg, color-mix(in srgb, var(--companion-color) 17%, #070a13), rgb(4 7 15 / 0.95));
+    box-shadow: 0 10px 30px rgb(0 0 0 / 0.36), 0 0 21px color-mix(in srgb, var(--companion-color) 18%, transparent);
+}
+
+.stage-toast--companion .stage-toast__body {
+    padding-left: 0;
+}
+
+.stage-toast--companion .stage-toast__eyebrow {
+    color: var(--companion-color);
+}

@@ -1,0 +1,241 @@
+/* =========================================================
+   TRANSICIÓN HOME → SELECTOR
+   Doce listones alternos cubren el distrito y se repliegan
+   para revelar el módulo de selección que ya se montó detrás.
+   ========================================================= */
+
+body.is-arcade-transitioning {
+    overflow: hidden;
+}
+
+
+.arcade-transition {
+    position: fixed;
+    z-index: var(--z-transition);
+    inset: 0;
+
+    overflow: hidden;
+
+    /* Transparente hasta que cada listón ocupa su franja: así el cierre
+       se lee como doce piezas y no como un fundido plano repentino. */
+    background: transparent;
+
+    pointer-events: auto;
+    isolation: isolate;
+}
+
+
+.arcade-transition__slats {
+    position: absolute;
+    inset: 0;
+
+    display: grid;
+    grid-template-rows: repeat(12, minmax(0, 1fr));
+}
+
+
+.arcade-transition__slats i {
+    position: relative;
+
+    display: block;
+
+    border-top: 1px solid rgb(34 211 238 / 0.28);
+    border-bottom: 1px solid rgb(139 92 246 / 0.24);
+
+    background:
+        linear-gradient(
+            90deg,
+            rgb(4 9 27 / 0.98),
+            rgb(21 21 67 / 0.96) 44%,
+            rgb(37 18 66 / 0.96) 70%,
+            rgb(4 9 27 / 0.98)
+        );
+    box-shadow:
+        inset 0 1px 0 rgb(255 255 255 / 0.045),
+        0 0 22px rgb(34 211 238 / 0.11);
+
+    opacity: 0;
+    transform: translateX(calc(var(--direction) * 108%));
+    will-change: opacity, transform, filter;
+}
+
+
+.arcade-transition__slats i::before {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    background:
+        repeating-linear-gradient(
+            90deg,
+            transparent 0 31px,
+            rgb(255 255 255 / 0.055) 31px 32px
+        ),
+        linear-gradient(90deg, transparent, rgb(34 211 238 / 0.22), transparent);
+
+    opacity: 0.72;
+}
+
+
+.arcade-transition__slats i::after {
+    content: "";
+
+    position: absolute;
+    top: 50%;
+    right: 5%;
+    left: 5%;
+
+    height: 1px;
+
+    background: linear-gradient(90deg, transparent, rgb(167 139 250 / 0.85), transparent);
+    box-shadow: 0 0 12px rgb(34 211 238 / 0.68);
+
+    opacity: 0.52;
+}
+
+
+.arcade-transition__status {
+    position: absolute;
+    z-index: 1;
+    top: 50%;
+    left: 50%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 7px;
+
+    margin: 0;
+
+    color: #F8FAFC;
+
+    font-family: var(--font-mono);
+    font-size: clamp(8px, 0.9vw, 11px);
+    letter-spacing: 0.28em;
+    line-height: 1;
+    text-align: center;
+    text-transform: uppercase;
+
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.94);
+
+    pointer-events: none;
+}
+
+
+.arcade-transition__status span {
+    color: #A5F3FC;
+    font-size: 0.78em;
+}
+
+
+.arcade-transition__status strong {
+    color: #F5F3FF;
+    font-family: var(--font-display);
+    font-size: clamp(13px, 1.7vw, 22px);
+    font-weight: 900;
+    letter-spacing: 0.09em;
+    text-shadow:
+        0 0 8px rgb(34 211 238 / 0.8),
+        0 0 22px rgb(139 92 246 / 0.64);
+}
+
+
+.arcade-transition.is-closing .arcade-transition__slats i {
+    animation: arcade-slat-close 360ms var(--ease-out) var(--close-delay) both;
+}
+
+
+.arcade-transition.is-closing .arcade-transition__status {
+    animation: arcade-transition-status-in 260ms var(--ease-out) 210ms both;
+}
+
+
+.arcade-transition.is-opening .arcade-transition__slats i {
+    animation: arcade-slat-open 460ms var(--ease-in-out) var(--open-delay) both;
+}
+
+
+.arcade-transition.is-opening .arcade-transition__status {
+    animation: arcade-transition-status-out 260ms var(--ease-in-out) both;
+}
+
+
+@keyframes arcade-slat-close {
+    from {
+        opacity: 0;
+        transform: translateX(calc(var(--direction) * 108%));
+    }
+
+    65% {
+        opacity: 1;
+        filter: brightness(1.35);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+
+@keyframes arcade-slat-open {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    35% {
+        filter: brightness(1.25);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateX(calc(var(--direction) * -112%));
+    }
+}
+
+
+@keyframes arcade-transition-status-in {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.86);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+
+@keyframes arcade-transition-status-out {
+    from {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    to {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(1.08);
+    }
+}
+
+
+@media (max-width: 640px) {
+
+    .arcade-transition__slats {
+        grid-template-rows: repeat(10, minmax(0, 1fr));
+    }
+
+    .arcade-transition__slats i:nth-child(11),
+    .arcade-transition__slats i:nth-child(12) {
+        display: none;
+    }
+
+    .arcade-transition__status {
+        letter-spacing: 0.2em;
+    }
+
+}

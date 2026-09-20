@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content"
+    >
+
+    <meta name="theme-color" content="#06070B">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <meta
+        name="description"
+        content="ARCADE 404 — Diez juegos arcade reimaginados: clásicos, Operación 404 y TURNO 404, una aventura narrativa de respuesta en equipo."
+    >
+
+    <meta name="author" content="ARCADE 404">
+
+    <meta property="og:title" content="ARCADE 404 — Classic games. Reimagined.">
+    <meta
+        property="og:description"
+        content="Diez experiencias arcade reconstruidas desde cero. Sin instalación, sin monedas."
+    >
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="./assets/logo.png">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <title>ARCADE 404 — Classic games. Reimagined.</title>
+
+    <link rel="icon" href="./assets/favicon.png" sizes="64x64" type="image/png">
+    <link rel="apple-touch-icon" href="./assets/favicon.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Chakra+Petch:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
+    >
+
+    <!-- Inicio se solicita cuanto antes; la reproducción audible sigue
+         sujeta a la política de autoplay del navegador. La tensión del
+         selector también se prepara para que el relevo tras ENTER sea fluido. -->
+    <link rel="preload" href="./assets/Sonido/Inicio.mp3" as="audio" type="audio/mpeg">
+    <link
+        rel="preload"
+        href="./assets/Sonido/Abiente%20%20de%20tension.mp3"
+        as="audio"
+        type="audio/mpeg"
+    >
+
+    <!-- Versión explícita para que un preview ya abierto no conserve la hoja
+         anterior a VIP Central en caché. -->
+    <link rel="stylesheet" href="./css/main.css?v=home-audio-37">
+
+</head>
+
+<body>
+
+    <!-- Inicio se descubre durante el parseo del documento, sin control
+         visible. El gestor de HOME reutiliza este elemento y lo pausa al
+         abandonar la portada. -->
+    <audio
+        class="home-audio"
+        id="homeMusicNative"
+        src="./assets/Sonido/Inicio.mp3"
+        preload="auto"
+        autoplay
+        loop
+        playsinline
+        aria-hidden="true"
+        tabindex="-1"
+    ></audio>
+
+    <!-- Se precarga sin autoplay: al pulsar ENTER se inicia en silencio
+         dentro del gesto y sube justo al aparecer el selector. -->
+    <audio
+        class="ambient-audio hub-tension-audio"
+        id="hubTensionMusicNative"
+        src="./assets/Sonido/Abiente%20%20de%20tension.mp3"
+        preload="auto"
+        loop
+        playsinline
+        aria-hidden="true"
+        tabindex="-1"
+    ></audio>
+
+    <script>
+        /* Segundo intento de reproducción en el instante más temprano
+           posible; se ignora el rechazo de políticas restrictivas. */
+        (() => {
+            const track = document.getElementById("homeMusicNative");
+
+            if (!track) {
+                return;
+            }
+
+            track.volume = 0.16;
+
+            try {
+                const playback = track.play();
+
+                if (playback && typeof playback.catch === "function") {
+                    playback.catch(() => {});
+                }
+            } catch (error) {
+                /* El gestor de HOME conserva sus reintentos automáticos. */
+            }
+        })();
+    </script>
+
+    <!-- =================================================
+         BOOT SEQUENCE
+         ================================================= -->
+
+    <div class="boot" id="boot">
+
+        <div class="boot__inner">
+
+            <p class="boot__logo">
+                ARCADE<span>404</span>
+            </p>
+
+            <div class="boot__bar">
+                <i id="bootBar"></i>
+            </div>
+
+            <p class="boot__log" id="bootLog">
+                INITIALIZING SYSTEM
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- =================================================
+         BACKGROUND
+         ================================================= -->
+
+    <div class="background" aria-hidden="true">
+
+        <div class="background__glow background__glow--one"></div>
+        <div class="background__glow background__glow--two"></div>
+        <div class="background__glow background__glow--three"></div>
+        <div class="background__grid"></div>
+        <div class="background__scan"></div>
+
+    </div>
+
+
+    <!-- El mismo distrito de HOME continúa detrás del selector, pero el
+         tratamiento oscuro reserva protagonismo para las tarjetas. -->
+    <div class="hub-district-backdrop" aria-hidden="true"></div>
+
+
+    <!-- =================================================
+         CRT OVERLAY
+         ================================================= -->
+
+    <div class="crt" aria-hidden="true">
+
+        <div class="crt__scanlines"></div>
+        <div class="crt__noise"></div>
+        <div class="crt__vignette"></div>
+
+    </div>
+
+
+    <!-- Cortina de doce listones: cubre HOME, deja montar el selector detrás
+         y se abre de nuevo para que el cambio de módulo nunca sea brusco. -->
+    <div
+        class="arcade-transition"
+        id="arcadeTransition"
+        aria-hidden="true"
+        hidden
+    >
+        <div class="arcade-transition__slats">
+            <i style="--close-delay: 0ms; --open-delay: 176ms; --direction: -1;"></i>
+            <i style="--close-delay: 20ms; --open-delay: 160ms; --direction: 1;"></i>
+            <i style="--close-delay: 40ms; --open-delay: 144ms; --direction: -1;"></i>
+            <i style="--close-delay: 60ms; --open-delay: 128ms; --direction: 1;"></i>
+            <i style="--close-delay: 80ms; --open-delay: 112ms; --direction: -1;"></i>
+            <i style="--close-delay: 100ms; --open-delay: 96ms; --direction: 1;"></i>
+            <i style="--close-delay: 120ms; --open-delay: 80ms; --direction: -1;"></i>
+            <i style="--close-delay: 140ms; --open-delay: 64ms; --direction: 1;"></i>
+            <i style="--close-delay: 160ms; --open-delay: 48ms; --direction: -1;"></i>
+            <i style="--close-delay: 180ms; --open-delay: 32ms; --direction: 1;"></i>
+            <i style="--close-delay: 200ms; --open-delay: 16ms; --direction: -1;"></i>
+            <i style="--close-delay: 220ms; --open-delay: 0ms; --direction: 1;"></i>
+        </div>
+        <p class="arcade-transition__status">
+            <span>LINKING DISTRICT</span>
+            <strong>SELECT GAME</strong>
+        </p>
+    </div>
+
+
+    <!-- =================================================
+         APPLICATION
+         ================================================= -->
+
+    <div class="app" id="app">
+
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+
+            <a
+                class="brand"
+                href="#/"
+                id="brandHome"
+                aria-label="ARCADE 404 — ir al inicio"
+            >
+
+                <span class="brand__mark" aria-hidden="true">▶</span>
+
+                <span class="brand__label">ARCADE</span>
+
+                <span class="brand__number">404</span>
+
+            </a>
+
+
+            <div class="topbar__status">
+
+                <span class="status">
+
+                    <i class="status__dot" aria-hidden="true"></i>
+
+                    SYSTEM ONLINE
+
+                </span>
+
+            </div>
+
+
+            <div class="topbar__actions">
+
+                <button
+                    class="icon-button"
+                    id="soundToggle"
+                    type="button"
+                    aria-pressed="false"
+                    title="Activar / desactivar sonido"
+                >
+
+                    <span class="icon-button__glyph" aria-hidden="true">♪</span>
+
+                    <span class="icon-button__label">SFX</span>
+
+                </button>
+
+
+                <button
+                    class="icon-button"
+                    id="musicToggle"
+                    type="button"
+                    aria-pressed="false"
+                    title="Activar / desactivar música"
+                >
+
+                    <span class="icon-button__glyph" aria-hidden="true">♫</span>
+
+                    <span class="icon-button__label">MSC</span>
+
+                </button>
+
+
+                <button
+                    class="icon-button icon-button--vip"
+                    id="vipButton"
+                    type="button"
+                    title="Abrir VIP Central"
+                >
+
+                    <span class="icon-button__glyph" aria-hidden="true">◈</span>
+
+                    <span class="icon-button__label">VIP</span>
+                    <strong class="topbar__vip-balance" id="vipBalance">-- ◈</strong>
+
+                </button>
+
+
+                <button
+                    class="icon-button"
+                    id="hubButton"
+                    type="button"
+                    title="Volver al selector de juegos"
+                >
+
+                    <span class="icon-button__glyph" aria-hidden="true">▦</span>
+
+                    <span class="icon-button__label">GAMES</span>
+
+                </button>
+
+            </div>
+
+        </header>
+
+
+        <!-- SCREENS -->
+
+        <main class="app__main" id="appMain">
+
+            <!-- =========================================
+                 HOME
+                 ========================================= -->
+
+            <section
+                class="screen screen--home"
+                id="screen-home"
+                aria-label="Inicio"
+            >
+
+                <div class="hero hero--city">
+
+                    <h1 class="sr-only">ARCADE 404</h1>
+
+                    <!-- Portada inmersiva: distrito ilustrado, overlays vivos,
+                         logo y elenco real; el único control visible es la entrada. -->
+                    <section class="hero__scene" aria-label="Distrito nocturno de ARCADE 404 con su equipo">
+
+                        <!-- CAPAS 1–3 · Ilustración pixel-art de la ciudad:
+                             cielo, skyline, recreativas, CRT, mascotas y suelo. Los
+                             overlays CSS aportan movimiento sin tapar el arte base. -->
+                        <div class="hero__world" aria-hidden="true">
+
+                            <img
+                                class="hero__district-art"
+                                src="./assets/Home/inicio-neon-base.png"
+                                alt=""
+                                width="1376"
+                                height="768"
+                                fetchpriority="high"
+                                decoding="async"
+                            >
+
+                            <!-- CAPA 1 viva · destellos, nubes y ovni de patrulla -->
+                            <div class="hero__stars">
+                                <i></i><i></i><i></i><i></i><i></i><i></i>
+                                <i></i><i></i><i></i><i></i><i></i><i></i>
+                                <i></i><i></i><i></i><i></i><i></i><i></i>
+                            </div>
+
+                            <i class="hero__meteor hero__meteor--one"></i>
+                            <i class="hero__meteor hero__meteor--two"></i>
+                            <i class="hero__cloud hero__cloud--one"></i>
+                            <i class="hero__cloud hero__cloud--two"></i>
+                            <i class="hero__cloud hero__cloud--three"></i>
+
+                            <div class="hero__ufo-flight">
+                                <div class="hero__ufo">
+                                    <i class="hero__ufo-beam"></i>
+                                    <i class="hero__ufo-dome"></i>
+                                    <i class="hero__ufo-saucer"></i>
+                                    <i class="hero__ufo-alien"></i>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- CAPA 5 · Marca, por delante del cielo y skyline -->
+                        <div class="hero__logo-stage" aria-hidden="true">
+                            <div class="hero__logo-crop">
+                                <img
+                                    class="hero__logo"
+                                    src="./assets/logo.png"
+                                    alt=""
+                                    width="1672"
+                                    height="941"
+                                    fetchpriority="high"
+                                    decoding="async"
+                                >
+                            </div>
+                            <p class="hero__logo-tagline">JUEGOS HECHOS A MI MANERA</p>
+                        </div>
+
+                        <!-- CAPA 4 · Orden exacto solicitado: Desire, Davinchi, Rog, Colinas, Sil -->
+                        <div class="hero__cast" role="list" aria-label="Equipo de cinco operadores">
+
+                            <figure class="hero__operator" data-character="desire" role="listitem" aria-label="Desire — Atención y refugio">
+                                <div class="hero__operator-portrait">
+                                    <img
+                                        src="./assets/Desire/Desire.png"
+                                        alt=""
+                                        width="344"
+                                        height="901"
+                                        decoding="async"
+                                    >
+                                </div>
+                            </figure>
+
+                            <figure class="hero__operator" data-character="davinchi" data-davinchi-entry role="listitem" aria-label="Davinchi — Seguridad y ruta">
+                                <div class="hero__operator-portrait">
+                                    <img
+                                        src="./assets/Davinchi/Davinchi.png"
+                                        alt=""
+                                        width="313"
+                                        height="528"
+                                        decoding="async"
+                                    >
+                                </div>
+                                <button
+                                    class="hero__operator-audio-button"
+                                    id="homeDavinchi"
+                                    type="button"
+                                    aria-pressed="false"
+                                    aria-label="Reproducir la pista de Davinchi"
+                                ></button>
+                            </figure>
+
+                            <figure class="hero__operator" data-character="rog" role="listitem" aria-label="Rog — Campo y operaciones">
+                                <div class="hero__operator-portrait">
+                                    <img
+                                        src="./assets/Rog/Rog.png"
+                                        alt=""
+                                        width="346"
+                                        height="895"
+                                        decoding="async"
+                                    >
+                                </div>
+                            </figure>
+
+                            <figure class="hero__operator" data-character="colinas" data-vip-entry role="listitem" aria-label="Sr. de las Colinas — suministros VIP">
+                                <div class="hero__operator-portrait">
+                                    <img
+                                        src="./assets/Sr de las colinas/Sr de las colinas.png"
+                                        alt=""
+                                        width="288"
+                                        height="901"
+                                        decoding="async"
+                                    >
+                                </div>
+                                <button
+                                    class="hero__operator-vip-button"
+                                    id="homeVipColinas"
+                                    type="button"
+                                    aria-label="Abrir la sala VIP del Sr. de las Colinas"
+                                ></button>
+                            </figure>
+
+                            <figure class="hero__operator" data-character="sil" role="listitem" aria-label="Sil — inteligencia de red">
+                                <div class="hero__operator-portrait">
+                                    <img
+                                        src="./assets/Sil/Sil.png"
+                                        alt=""
+                                        width="1670"
+                                        height="941"
+                                        decoding="async"
+                                    >
+                                </div>
+                            </figure>
+
+                        </div>
+
+                        <p class="sr-only" id="homeAudioStatus" role="status" aria-live="polite"></p>
+
+                    </section>
+
+                    <!-- Único control visible de la portada inmersiva. -->
+                    <div class="hero__actions">
+                        <button
+                            class="btn btn--primary"
+                            id="enterArcade"
+                            type="button"
+                            aria-label="Entrar al Arcade 404"
+                        >
+                            <span class="hero__cta-scan" aria-hidden="true"></span>
+                            <span class="hero__cta-emblem" aria-hidden="true">
+                                <span>▶</span>
+                            </span>
+                            <span class="hero__cta-copy">
+                                <span class="hero__cta-status">SISTEMA EN LÍNEA</span>
+                                <span class="btn__label">ENTRAR AL ARCADE</span>
+                            </span>
+                            <span class="hero__cta-key" aria-hidden="true">
+                                <kbd>ENTER</kbd>
+                                <span>INICIAR</span>
+                            </span>
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =========================================
+                 HUB
+                 ========================================= -->
+
+            <section
+                class="screen screen--hub"
+                id="screen-hub"
+                aria-label="Selector de juegos"
+                hidden
+            >
+
+                <div class="hub">
+
+                    <header class="hub__header">
+
+                        <div>
+
+                            <p class="hub__eyebrow">
+                                SYS.404 // GAME SELECT
+                            </p>
+
+                            <h2 class="hub__title">
+                                SELECT GAME
+                            </h2>
+
+                        </div>
+
+                        <div class="hub__meta">
+
+                            <span id="hubCount">10 TITLES</span>
+
+                            <span>FREE PLAY</span>
+
+                            <button class="hub__vip-button" id="vipHubButton" type="button">
+                                <i aria-hidden="true">◈</i> VIP CENTRAL
+                            </button>
+
+                        </div>
+
+                    </header>
+
+
+                    <div
+                        class="game-grid"
+                        id="gameGrid"
+                        role="list"
+                    ></div>
+
+
+                    <footer class="hub__footer">
+
+                        <span>
+                            <kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd>
+                            SELECT
+                        </span>
+
+                        <span>
+                            <kbd>ENTER</kbd> PLAY
+                        </span>
+
+                        <span>
+                            <kbd>ESC</kbd> BACK
+                        </span>
+
+                    </footer>
+
+                </div>
+
+            </section>
+
+
+            <!-- =========================================
+                 VIP CENTRAL · economía persistente global
+                 ========================================= -->
+
+            <section
+                class="screen screen--vip"
+                id="screen-vip"
+                aria-label="VIP Central: tickets, suministros y compañeros"
+                hidden
+            >
+                <div id="vipCentral"></div>
+            </section>
+
+
+            <!-- GAME SCREENS (generadas por JS) -->
+
+            <div class="game-root" id="gameRoot"></div>
+
+        </main>
+
+
+        <!-- SYSTEM INFO -->
+
+        <div class="system-info system-info--left" aria-hidden="true">
+            <span>SYS.404</span>
+            <span>BUILD 404</span>
+        </div>
+
+
+        <div class="system-info system-info--right" aria-hidden="true">
+            <span id="clock">--:--:--</span>
+            <span>READY</span>
+        </div>
+
+
+        <!-- FOOTER -->
+
+        <footer class="footer">
+
+            <span>ARCADE 404</span>
+
+            <span class="footer__sep" aria-hidden="true">///</span>
+
+            <span>CLASSIC GAMES // NEW ERA</span>
+
+        </footer>
+
+    </div>
+
+
+    <!-- Región para lectores de pantalla -->
+    <p class="sr-only" id="liveRegion" role="status" aria-live="polite"></p>
+
+
+    <!-- =================================================
+         SCRIPTS — CORE
+         ================================================= -->
+
+    <script defer src="./js/core/utils.js"></script>
+    <script defer src="./js/core/storage.js"></script>
+    <script defer src="./js/core/assets.js?v=op404-companion-22"></script>
+    <script defer src="./js/core/vip.js?v=campaign-open-24"></script>
+    <script defer src="./js/core/story.js?v=op404-companion-22"></script>
+    <script defer src="./js/core/audio.js"></script>
+    <script defer src="./js/core/loop.js"></script>
+    <script defer src="./js/core/input.js"></script>
+    <script defer src="./js/core/canvas.js"></script>
+    <script defer src="./js/core/registry.js"></script>
+    <script defer src="./js/core/pixelart.js"></script>
+    <script defer src="./js/core/taunts.js"></script>
+    <script defer src="./js/core/game-shell.js?v=touch-analog-26"></script>
+    <script defer src="./js/core/router.js?v=vip-central-2"></script>
+    <script defer src="./js/core/hub.js?v=vip-central-2"></script>
+    <script defer src="./js/core/vip-central.js?v=campaign-open-24"></script>
+
+    <!-- =================================================
+         SCRIPTS — GAMES
+         ================================================= -->
+
+    <script defer src="./js/games/snake.js"></script>
+    <script defer src="./js/games/invaders.js"></script>
+    <script defer src="./js/games/pong.js"></script>
+    <script defer src="./js/games/breaker.js"></script>
+    <script defer src="./js/games/tetris.js?v=stack-modes-23"></script>
+    <script defer src="./js/games/chess.js"></script>
+    <script defer src="./js/games/blockblast.js"></script>
+    <script defer src="./js/games/pac404.js"></script>
+    <script defer src="./js/games/op404/maps.js?v=op404-cover-25"></script>
+    <script defer src="./js/games/op404/sprites.js?v=op404-cover-25"></script>
+    <script defer src="./js/games/op404/intro.js?v=op404-companion-22"></script>
+    <script defer src="./js/games/op404/clap.js?v=op404-companion-22"></script>
+    <script defer src="./js/games/op404/shop.js?v=op404-weapons-23"></script>
+    <script defer src="./js/games/op404/game.js?v=op404-cover-25"></script>
+    <script defer src="./js/games/turno404.js?v=turno404-protocol-30"></script>
+
+    <!-- =================================================
+         SCRIPTS — BOOTSTRAP
+         ================================================= -->
+
+    <script defer src="./js/app.js?v=op404-companion-22"></script>
+
+</body>
+
+</html>

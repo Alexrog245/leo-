@@ -1,0 +1,12 @@
+/* =========================================================
+   GAME 04 — BREAKER
+   ========================================================= */
+
+.game-screen[data-game="breaker"] {
+    --accent: var(--color-amber);
+    --accent-rgb: 251 191 36;
+
+    --stage-max: 1160px;
+    --stage-ratio: 0.833;  /* JS lo ajusta a la pantalla real */
+    --stage-chrome: 150px;
+}

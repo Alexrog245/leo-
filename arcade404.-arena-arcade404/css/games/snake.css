@@ -1,0 +1,12 @@
+/* =========================================================
+   GAME 01 — SNAKE
+   ========================================================= */
+
+.game-screen[data-game="snake"] {
+    --accent: var(--color-lime);
+    --accent-rgb: 163 230 53;
+
+    --stage-max: 1500px;
+    --stage-ratio: 1;   /* JS lo ajusta a la pantalla real */
+    --stage-chrome: 150px;
+}

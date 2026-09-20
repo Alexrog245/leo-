@@ -1,0 +1,154 @@
+/* =========================================================
+   FONDO — RESPLANDORES, RETÍCULA Y BARRIDO
+   ========================================================= */
+
+.background {
+    position: fixed;
+    inset: 0;
+
+    z-index: var(--z-background);
+
+    overflow: hidden;
+
+    background:
+
+        radial-gradient(
+            circle at 50% 32%,
+            rgba(139, 92, 246, 0.10),
+            transparent 34%
+        ),
+
+        radial-gradient(
+            circle at 14% 82%,
+            rgba(34, 211, 238, 0.07),
+            transparent 30%
+        ),
+
+        radial-gradient(
+            circle at 86% 16%,
+            rgba(244, 63, 94, 0.05),
+            transparent 26%
+        ),
+
+        var(--color-void);
+}
+
+
+/* ---------------------------------------------------------
+   Resplandores ambientales
+   --------------------------------------------------------- */
+
+.background__glow {
+    position: absolute;
+
+    width: 440px;
+    height: 440px;
+
+    border-radius: 50%;
+
+    filter: blur(110px);
+
+    opacity: 0.16;
+
+    pointer-events: none;
+}
+
+
+.background__glow--one {
+    top: -190px;
+    left: -130px;
+
+    background: var(--color-purple);
+
+    animation: ambient-one 13s var(--ease-in-out) infinite alternate;
+}
+
+
+.background__glow--two {
+    right: -170px;
+    bottom: -190px;
+
+    background: var(--color-cyan);
+
+    animation: ambient-two 16s var(--ease-in-out) infinite alternate;
+}
+
+
+.background__glow--three {
+    top: 38%;
+    left: 52%;
+
+    width: 360px;
+    height: 360px;
+
+    background: var(--color-pink);
+
+    animation: ambient-three 19s var(--ease-in-out) infinite alternate;
+}
+
+
+/* ---------------------------------------------------------
+   Retícula
+   --------------------------------------------------------- */
+
+.background__grid {
+    position: absolute;
+    inset: 0;
+
+    opacity: 0.5;
+
+    background-image:
+
+        linear-gradient(
+            rgba(255, 255, 255, 0.035) 1px,
+            transparent 1px
+        ),
+
+        linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.035) 1px,
+            transparent 1px
+        );
+
+    background-size: 64px 64px;
+
+    mask-image: linear-gradient(
+        to bottom,
+        transparent,
+        black 18%,
+        black 82%,
+        transparent
+    );
+
+    -webkit-mask-image: linear-gradient(
+        to bottom,
+        transparent,
+        black 18%,
+        black 82%,
+        transparent
+    );
+}
+
+
+/* ---------------------------------------------------------
+   Barrido vertical suave
+   --------------------------------------------------------- */
+
+.background__scan {
+    position: absolute;
+
+    left: 0;
+    right: 0;
+    height: 38vh;
+
+    background: linear-gradient(
+        to bottom,
+        transparent,
+        rgba(139, 92, 246, 0.045),
+        transparent
+    );
+
+    animation: background-scan 14s linear infinite;
+
+    pointer-events: none;
+}

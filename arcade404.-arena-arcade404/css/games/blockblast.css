@@ -1,0 +1,12 @@
+/* =========================================================
+   GAME 07 — BLOCK BLAST
+   ========================================================= */
+
+.game-screen[data-game="blockblast"] {
+    --accent: var(--color-lime);
+    --accent-rgb: 163 230 53;
+
+    --stage-max: 900px;
+    --stage-ratio: 0.95;
+    --stage-chrome: 150px;
+}

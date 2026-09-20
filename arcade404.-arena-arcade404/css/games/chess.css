@@ -1,0 +1,12 @@
+/* =========================================================
+   GAME 06 — CHESS
+   ========================================================= */
+
+.game-screen[data-game="chess"] {
+    --accent: var(--color-gold);
+    --accent-rgb: 212 175 55;
+
+    --stage-max: 1200px;
+    --stage-ratio: 1;      /* JS lo ajusta a la pantalla real */
+    --stage-chrome: 180px;
+}
